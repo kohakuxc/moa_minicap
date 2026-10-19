@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Patient {
+  id           String        @id @default(cuid())
+  name         String
+  email        String        @unique
+  phone        String?
+  dateOfBirth  DateTime?
+  patientId    String        @unique
+  appointments Appointment[]
+  prescriptions Prescription[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Appointment {
+  id           String   @id @default(cuid())
+  patientId    String
+  patient      Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  service      String
+  specialist   String?
+  startsAt     DateTime
+  notes        String?
+  status       String   @default("requested")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  @@index([startsAt, status])
+}
+
+model Prescription {
+  id          String   @id @default(cuid())
+  patientId   String
+  patient     Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  eye         String
+  sphere      Decimal? @db.Decimal(5, 2)
+  cylinder    Decimal? @db.Decimal(5, 2)
+  axis        Int?
+  pd          Decimal? @db.Decimal(5, 2)
+  issuedAt    DateTime @default(now())
+  expiresAt   DateTime?
+}
