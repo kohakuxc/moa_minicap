@@ -104,6 +104,25 @@ PostgreSQL datasource in `prisma/schema.prisma`.
 The `DB_*` values are used by Laravel. `DATABASE_URL` is used by Prisma. Keep
 both pointed at the same Supabase project.
 
+## Connect GitHub Actions to Supabase
+
+The repository must not contain a Supabase password or connection string.
+Instead, add these encrypted repository secrets on GitHub:
+
+1. Open `https://github.com/kohakuxc/moa_minicap`.
+2. Go to **Settings > Secrets and variables > Actions**.
+3. Select **New repository secret**.
+4. Add `SUPABASE_DATABASE_URL` with the Supabase pooler/session connection
+   string, or the direct connection if your deployment supports it.
+5. Add `SUPABASE_DIRECT_URL` with the Supabase direct connection string used
+   for migrations.
+
+The workflow at `.github/workflows/supabase.yml` will validate the Prisma
+schema and apply committed migrations whenever Prisma files are pushed to
+`main`. It can also be started manually from the repository's **Actions** tab.
+Do not use the Supabase service-role key for Prisma migrations; these secrets
+are PostgreSQL connection strings and must remain server-side.
+
 ## 4. Create the schema
 
 ```powershell

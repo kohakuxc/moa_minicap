@@ -1,0 +1,35 @@
+name: Supabase schema
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "prisma/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/supabase.yml"
+  workflow_dispatch:
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      DATABASE_URL: ${{ secrets.SUPABASE_DATABASE_URL }}
+      DIRECT_URL: ${{ secrets.SUPABASE_DIRECT_URL }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm install
+      - name: Validate Prisma schema
+        run: npm run prisma:validate
+      - name: Apply Prisma migrations
+        run: npm run prisma:migrate
