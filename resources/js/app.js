@@ -3,6 +3,11 @@ import './bootstrap';
 const modal = (name, open) => {
     const element = document.querySelector(`[data-modal="${name}"]`);
     if (!element) return;
+    if (open) {
+        document.querySelectorAll('.modal-backdrop').forEach((backdrop) => {
+            if (backdrop !== element) backdrop.hidden = true;
+        });
+    }
     element.hidden = !open;
     document.body.classList.toggle('modal-open', open);
 };
@@ -16,6 +21,11 @@ document.querySelectorAll('[data-close-modal]').forEach((button) => button.addEv
 document.querySelectorAll('.modal-backdrop').forEach((backdrop) => backdrop.addEventListener('click', (event) => {
     if (event.target === backdrop) modal(backdrop.dataset.modal, false);
 }));
+document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    const openBackdrop = document.querySelector('.modal-backdrop:not([hidden])');
+    if (openBackdrop) modal(openBackdrop.dataset.modal, false);
+});
 
 document.querySelectorAll('.filter').forEach((filter) => filter.addEventListener('click', () => {
     document.querySelectorAll('.filter').forEach((item) => item.classList.remove('active'));
