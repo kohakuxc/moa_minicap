@@ -7,7 +7,7 @@
     <title>Oculo — Precision vision, signature style</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Lobster&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/app.css">
     <script type="module" src="/app.js" defer></script>
 </head>
@@ -118,6 +118,6 @@
             <div class="booking-success" hidden><div class="success-icon">✓</div><h3>You’re all booked.</h3><p>We’ll see you Tuesday, June 24 at 9:00 AM. A confirmation is on its way to your inbox.</p><button class="button button-dark" data-close-modal>Done</button></div>
         </div>
     </div>
-    <div class="modal-backdrop" data-modal="auth" hidden><div class="modal auth-modal"><button class="modal-close" data-close-modal>×</button><div class="modal-kicker">WELCOME BACK</div><h2>Your vision,<br><em>in focus.</em></h2><p class="modal-intro">Log in to view your appointments, prescriptions, and saved frames.</p><form><input type="email" placeholder="Email address"><input type="password" placeholder="Password"><button class="button button-teal">Log in <span>→</span></button></form><p class="form-foot">New to Oculo? <a href="#">Create an account</a></p></div></div>
+    <div class="modal-backdrop" data-modal="auth" hidden><div class="modal auth-modal"><button class="modal-close" data-close-modal>×</button><div class="modal-kicker">WELCOME BACK</div><h2>Your vision,<br>is our vision eme.</h2><p class="modal-intro">Log in to view your appointments, prescriptions, and saved frames.</p><form><input type="email" placeholder="Email address"><input type="password" placeholder="Password"><button class="button button-teal">Log in <span>→</span></button></form><p class="form-foot">New to Oculo? <a href="#">Create an account</a></p></div></div>
 </body>
 </html>
