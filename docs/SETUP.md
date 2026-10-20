@@ -294,12 +294,20 @@ URL as a permanent production domain. Never commit the ngrok token.
 
 - **`php` is not recognized:** reopen PowerShell or confirm Laravel Herd is
   installed and active.
+- **`node`, `npm`, or `npx` is not recognized:** install the Node.js LTS
+  Windows installer as Administrator, close every PowerShell window, open a
+  new one, and run `node --version` again. If `winget` reports installer error
+  `1603`, run the downloaded Node.js installer directly with
+  **Run as administrator**.
 - **`could not find driver`:** enable PHP's `pdo_pgsql` extension in the PHP
   installation used by `php --ini`.
 - **`password authentication failed`:** copy the Supabase database password
   again and confirm the pooler username, host, and port.
 - **Prisma `P1001`:** check network access and use the Supabase session pooler
   for runtime traffic; use the direct connection for migrations.
+- **Prisma URL parse/authentication error:** `DIRECT_URL` must be a PostgreSQL
+  URL beginning with `postgresql://`, not the Supabase dashboard URL beginning
+  with `https://`. URL-encode special characters in passwords inside the URL.
 - **Prisma says `DIRECT_URL` is missing:** confirm it is present in local `.env`
   and as a GitHub Secret.
 - **Workflow says no migrations found:** generate the first migration locally
