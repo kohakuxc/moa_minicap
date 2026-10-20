@@ -14,7 +14,10 @@ document.querySelectorAll('[data-open-booking]').forEach((button) => button.addE
 document.querySelectorAll('[data-open-auth]').forEach((button) => button.addEventListener('click', () => modal('auth', true)));
 document.querySelectorAll('[data-close-modal]').forEach((button) => button.addEventListener('click', () => {
     const backdrop = button.closest('.modal-backdrop');
-    if (backdrop) modal(backdrop.dataset.modal, false);
+    if (backdrop) {
+        document.querySelectorAll('.modal-backdrop').forEach((item) => { item.hidden = true; });
+        document.body.classList.remove('modal-open');
+    }
 }));
 document.querySelectorAll('.modal-backdrop').forEach((backdrop) => backdrop.addEventListener('click', (event) => {
     if (event.target === backdrop) modal(backdrop.dataset.modal, false);
