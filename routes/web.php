@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\PatientController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
@@ -10,16 +11,6 @@ use Illuminate\Http\Request;
 Route::get('/', function () {
     return view('welcome');
 });
-
-Route::post('/appointments', function (\Illuminate\Http\Request $request) {
-    $validated = $request->validate([
-        'name' => ['required', 'string', 'max:120'],
-        'email' => ['required', 'email'],
-        'phone' => ['required', 'string', 'max:30'],
-    ]);
-
-    return response()->json(['message' => 'Appointment request received', 'appointment' => $validated], 201);
-})->name('appointments.store');
 
 Route::post('/auth/register', [AuthController::class, 'register'])
     ->middleware('guest')
@@ -52,6 +43,7 @@ Route::post('/email/verification-notification', [AuthController::class, 'sendVer
 
 Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::get('/dashboard', [PatientController::class, 'dashboard'])->name('dashboard');
+    Route::post('/appointments', [AppointmentController::class, 'store'])->name('appointments.store');
     Route::patch('/profile', [PatientController::class, 'updateProfile'])->name('profile.update');
     Route::delete('/appointments/{appointment}', [PatientController::class, 'cancelAppointment'])->name('appointments.cancel');
 });

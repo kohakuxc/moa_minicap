@@ -87,8 +87,21 @@ document.querySelector('[data-next]')?.addEventListener('click', () => {
     if (currentStep < 3) { currentStep += 1; updateBookingStep(); return; }
     const form = document.querySelector('#booking-form');
     if (form.reportValidity()) {
-        form.hidden = true;
-        document.querySelector('.booking-success').hidden = false;
+        const service = document.querySelector('.choice.selected')?.dataset.choice;
+        const date = document.querySelector('.date.selected')?.dataset.date;
+        const time = document.querySelector('.time.selected')?.dataset.time;
+        fetch('/appointments', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+            credentials: 'same-origin',
+            body: JSON.stringify({ service, starts_at: `${date} ${time}:00` }),
+        }).then(async (response) => {
+            const data = await response.json();
+            if (response.status === 401 || response.status === 302) throw new Error('Please log in and verify your email before booking.');
+            if (!response.ok) throw new Error(Object.values(data.errors || {}).flat()[0] || data.message || 'Unable to request appointment.');
+            form.hidden = true;
+            document.querySelector('.booking-success').hidden = false;
+        }).catch((error) => window.alert(error.message));
     }
 });
 document.querySelector('[data-prev]')?.addEventListener('click', () => { currentStep -= 1; updateBookingStep(); });

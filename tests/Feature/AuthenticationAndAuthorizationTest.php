@@ -57,4 +57,20 @@ class AuthenticationAndAuthorizationTest extends TestCase
 
         $this->actingAs($owner)->delete("/appointments/{$appointment->id}")->assertNotFound();
     }
+
+    public function test_verified_patient_can_request_an_appointment(): void
+    {
+        $user = User::factory()->create(['email_verified_at' => now()]);
+
+        $this->actingAs($user)->postJson('/appointments', [
+            'service' => 'Comprehensive eye exam',
+            'starts_at' => now()->addWeek()->toDateTimeString(),
+        ])->assertCreated();
+
+        $this->assertDatabaseHas('appointments', [
+            'user_id' => $user->id,
+            'service' => 'Comprehensive eye exam',
+            'status' => 'requested',
+        ]);
+    }
 }
