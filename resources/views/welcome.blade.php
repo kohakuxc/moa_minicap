@@ -126,8 +126,9 @@
                 <h2>Your vision<br>is our mission eme.</h2>
                 <p class="modal-intro">blah blah blah ang qt ni aya.</p>
                 <form data-auth-form="login">
-                    <input type="email" required placeholder="Email address">
-                    <input type="password" required placeholder="Password">
+                    <input type="email" name="email" required placeholder="Email address">
+                    <input type="password" name="password" required placeholder="Password">
+                    <p class="auth-error" data-auth-error="login" role="alert" hidden></p>
                     <button type="submit" class="button button-teal">Log in <span>→</span></button>
                 </form>
                 <p class="form-foot">New to bomboclat? <button type="button" class="auth-link" data-auth-switch="register">Create an account</button></p>
@@ -137,10 +138,12 @@
                 <h2>Make room for<br><em>clearer days.</em></h2>
                 <p class="modal-intro">Create your patient account to manage appointments, prescriptions, and saved frames.</p>
                 <form data-auth-form="register">
-                    <input type="text" required placeholder="Full name">
-                    <input type="email" required placeholder="Email address">
-                    <input type="tel" required placeholder="Phone number">
-                    <input type="password" required minlength="8" placeholder="Password (8+ characters)">
+                    <input type="text" name="name" required placeholder="Full name">
+                    <input type="email" name="email" required placeholder="Email address">
+                    <input type="tel" name="phone" required placeholder="Phone number">
+                    <input type="password" name="password" required minlength="8" placeholder="Password (8+ characters)">
+                    <input type="password" name="password_confirmation" required minlength="8" placeholder="Confirm password">
+                    <p class="auth-error" data-auth-error="register" role="alert" hidden></p>
                     <button type="submit" class="button button-teal">Create account <span>→</span></button>
                 </form>
                 <p class="form-foot">Already have an account? <button type="button" class="auth-link" data-auth-switch="login">Log in</button></p>

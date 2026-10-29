@@ -20,9 +20,26 @@ document.querySelectorAll('[data-auth-switch]').forEach((button) => button.addEv
 document.querySelectorAll('[data-auth-form]').forEach((form) => form.addEventListener('submit', (event) => {
     event.preventDefault();
     if (!form.reportValidity()) return;
+    const type = form.dataset.authForm;
     const submit = form.querySelector('button[type="submit"]');
-    submit.textContent = form.dataset.authForm === 'register' ? 'Account created ✓' : 'Logged in ✓';
+    const error = document.querySelector(`[data-auth-error="${type}"]`);
+    const payload = Object.fromEntries(new FormData(form).entries());
+    error.hidden = true;
     submit.disabled = true;
+    fetch(type === 'register' ? '/auth/register' : '/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+        credentials: 'same-origin',
+        body: JSON.stringify(payload),
+    }).then(async (response) => {
+        const data = await response.json();
+        if (!response.ok) throw new Error(Object.values(data.errors || {}).flat()[0] || data.message || 'Unable to complete authentication.');
+        submit.textContent = type === 'register' ? 'Account created ✓' : 'Logged in ✓';
+    }).catch((requestError) => {
+        error.textContent = requestError.message;
+        error.hidden = false;
+        submit.disabled = false;
+    });
 }));
 document.querySelectorAll('[data-close-modal]').forEach((button) => button.addEventListener('click', () => {
     const backdrop = button.closest('.modal-backdrop');

@@ -5,3 +5,4 @@
 @media(max-width:430px){.hero h1{font-size:48px}.hero-visual{transform:scale(.9);transform-origin:left top;margin-bottom:-30px}.filter-row{gap:18px;overflow:auto}.filter{white-space:nowrap}.product-info{display:block}.product-info strong{display:block;margin-top:7px}.section h2,.experience-copy h2{font-size:42px}}
 .hero h1,h2,.quote-section blockquote,.modal h2{font-family:'Lobster',cursive;font-weight:400;letter-spacing:0}
 .auth-link{background:none;color:var(--bronze);font-size:11px;text-decoration:underline;padding:0}
+.auth-error{color:#a3483f;font-size:11px;line-height:1.4;margin:8px 0}
