@@ -38,6 +38,7 @@ class PatientController extends Controller
     public function cancelAppointment(Request $request, int $appointment)
     {
         $record = $request->user()->appointments()->findOrFail($appointment);
+        $this->authorize('delete', $record);
         abort_if($record->starts_at->isPast() || $record->status === 'cancelled', 422);
         $record->update(['status' => 'cancelled']);
 

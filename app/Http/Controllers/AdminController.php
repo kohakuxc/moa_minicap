@@ -26,6 +26,7 @@ class AdminController extends Controller
 
     public function updateAppointment(Request $request, Appointment $appointment)
     {
+        $this->authorize('update', $appointment);
         $validated = $request->validate(['status' => ['required', 'in:requested,confirmed,completed,cancelled']]);
         $appointment->update($validated);
         AuditLog::create([
@@ -40,6 +41,7 @@ class AdminController extends Controller
 
     public function storePrescription(Request $request, User $user)
     {
+        $this->authorize('create', Prescription::class);
         $validated = $request->validate([
             'eye' => ['required', 'in:OD,OS'],
             'sphere' => ['nullable', 'numeric', 'between:-30,30'],
