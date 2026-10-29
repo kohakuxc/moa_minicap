@@ -7,7 +7,85 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## About Laravel
+# MOA optical clinic
+
+MOA is a Laravel 12 patient-management and eyewear application backed by
+PostgreSQL/Supabase. Laravel is the application source of truth for users,
+appointments, prescriptions, roles, authorization, and sessions. The Prisma
+schema remains available for validation and migration tooling, but application
+requests use Eloquent and Laravel migrations so there is no split runtime data
+model.
+
+## Local setup
+
+```powershell
+composer install
+npm install
+Copy-Item .env.example .env
+php artisan key:generate
+php artisan migrate
+npm run build
+php artisan serve --host=127.0.0.1 --port=8000
+```
+
+Required server-side environment values include `APP_KEY`, `APP_URL`,
+`APP_DEBUG`, `DB_CONNECTION=pgsql`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`,
+`DB_USERNAME`, `DB_PASSWORD`, `DATABASE_URL`, and `DIRECT_URL`. Keep `.env`
+local and never expose either database URL to browser code.
+
+## Mail and account security
+
+Configure a real HTTPS application URL and a real mail provider in production.
+Set `MAIL_MAILER`, `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`,
+`MAIL_PASSWORD`, `MAIL_FROM_ADDRESS`, and `MAIL_FROM_NAME`. Local development
+can use `MAIL_MAILER=log`; verification and password-reset links will appear
+in the Laravel log.
+
+Registration sends email verification. Patient records require a verified
+email. Password-reset requests always return a generic response so they do
+not reveal whether an email is registered. Login, registration, verification,
+and reset endpoints are rate-limited.
+
+Promote an administrator from a trusted terminal only:
+
+```powershell
+php artisan user:promote patient@example.com
+```
+
+The command prompts for confirmation. Never accept a role value from a
+browser request.
+
+## Patient and admin areas
+
+- `/dashboard` is restricted to the authenticated, verified patient.
+- `/admin` requires an authenticated, verified user with the `admin` role.
+- Patients can update only their own profile and cancel their own future
+  appointments.
+- Admin actions are validated and protected by the admin middleware.
+
+## Database and privacy
+
+Run `php artisan migrate` for Laravel's users, sessions, appointments,
+prescriptions, and audit-log tables. Laravel migrations are the only runtime
+schema migration path; Prisma is validation-only in this repository. Use fake
+records during development. Production use of
+patient or prescription data requires a legal, privacy, security, retention,
+regional, and healthcare-compliance review appropriate to your jurisdiction.
+Enable Supabase backups and test restoration before relying on the system.
+Use `APP_DEBUG=false`, HTTPS, secure cookies, a secret manager, and least
+privilege in production. Never commit `.env`, passwords, service-role keys,
+database dumps, or real patient data.
+
+## Verification
+
+```powershell
+php artisan test
+php artisan route:list
+npx prisma validate
+npm run build
+```
+
+## Original Laravel reference
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 

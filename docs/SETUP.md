@@ -4,8 +4,14 @@ This project uses:
 
 - **Laravel** for the server and application rules
 - **PostgreSQL on Supabase** for persistent data
-- **Prisma** for the patient, appointment, and prescription schema
-- **GitHub Actions** to validate and apply committed Prisma migrations
+- **Prisma** for compatibility validation of the existing PostgreSQL contract
+- **GitHub Actions** to validate the schema
+
+Laravel migrations and Eloquent models are the single runtime source of truth
+for users, roles, appointments, prescriptions, sessions, and audit logs. Do
+not run Prisma migrations against the application database; applying both
+systems would create competing schemas. Run `php artisan migrate --force` as
+part of the trusted PHP deployment instead.
 
 The repository can never be functionally connected to your Supabase project
 until you add your private Supabase connection strings as GitHub Secrets. Never
@@ -42,7 +48,7 @@ ngrok version
 4. Turn on MFA for the Supabase account.
 5. Open **Project Settings > Database > Connect**.
 6. Copy the **session pooler** connection string for application traffic.
-7. Copy the **direct** connection string for Prisma migrations.
+7. Copy the direct connection only if your deployment provider requires it.
 8. Confirm that the database is PostgreSQL and that the project is not paused.
 
 For real patient or prescription data, review your local privacy and healthcare
@@ -101,7 +107,7 @@ DB_PASSWORD=your-supabase-database-password
 # Use the session pooler URL for Laravel runtime connections.
 DATABASE_URL="postgresql://your-supabase-pooler-username:your-supabase-database-password@your-supabase-pooler-host:5432/postgres?schema=public"
 
-# Use the direct URL for Prisma migrations.
+# Optional direct URL for tooling; Laravel migrations use DB_*.
 DIRECT_URL="postgresql://postgres:your-supabase-database-password@your-supabase-direct-host:5432/postgres?schema=public"
 ```
 
@@ -119,41 +125,37 @@ php artisan config:clear
 Do not put either connection string in `resources/`, `public/`, Blade markup,
 browser JavaScript, screenshots, issues, or pull requests.
 
-## 5. Generate the first Prisma migration locally
+## 5. Apply Laravel's application schema
 
-The repository contains `prisma/schema.prisma`, but the initial migration is
-created only after you provide a real database connection. Run:
+Laravel migrations define the production application schema. After setting
+your environment variables, run:
 
 ```powershell
-npx prisma generate
-npx prisma validate
-npx prisma migrate dev --name init
+php artisan config:clear
+php artisan migrate
 ```
 
-Confirm that a new `prisma/migrations/` directory was created. Inspect the SQL
-before committing it. It should create the `Patient`, `Appointment`, and
-`Prescription` tables and the required indexes/foreign keys.
+This creates users, sessions, appointments, prescriptions, and audit logs.
+Inspect migration files before committing changes.
 
 Check the migration status:
 
 ```powershell
-npx prisma migrate status
+php artisan migrate:status
 ```
 
-Then inspect the new tables in Supabase **Table Editor**. Do not edit the
-database manually after migration in normal development. Change
-`prisma/schema.prisma`, generate a named migration, review it, and commit it.
+Then inspect the tables in Supabase **Table Editor**. Do not use
+`migrate:fresh` against a shared or production database.
 
-Commit only schema and migration files:
+Prisma is retained as a compatibility check:
 
 ```powershell
-git add prisma package.json package-lock.json
-git commit -m "Add initial Supabase schema migration"
-git push origin main
+npx prisma validate
 ```
 
-Never commit `.env`, `.env.*` files containing credentials, database dumps, or
-service-role keys.
+Do not run `prisma migrate dev` or `prisma migrate deploy` against the
+application database; Laravel owns the runtime schema. Never commit `.env`,
+database dumps, or service-role keys.
 
 ## 6. Add encrypted GitHub Actions secrets
 
@@ -166,8 +168,8 @@ https://github.com/kohakuxc/moa_minicap
 3. Click **New repository secret**.
 4. Add `SUPABASE_DATABASE_URL`.
    - Value: the Supabase session pooler connection string used by runtime jobs.
-5. Add `SUPABASE_DIRECT_URL`.
-   - Value: the Supabase direct connection string used by Prisma migrations.
+5. Add `SUPABASE_DIRECT_URL` only if a tooling job needs it.
+   - Value: the Supabase direct connection string.
 
 GitHub encrypts these values and exposes them only to workflows that reference
 them. Do not add them as ordinary repository variables. Do not add Supabase
@@ -192,17 +194,20 @@ tab. It:
 2. Installs Node.js.
 3. Installs dependencies.
 4. Validates the Prisma schema.
-5. Runs `prisma migrate deploy` against Supabase.
+5. Validates the Prisma compatibility schema.
 
-`migrate deploy` applies committed migrations; it does not create migrations
-from schema changes. Always create and review migrations locally first.
+Laravel migrations must run in the PHP deployment environment:
 
-After pushing the first migration:
+```powershell
+php artisan migrate --force
+```
+
+After pushing schema or tooling changes:
 
 1. Open **Actions > Supabase schema**.
 2. Open the new workflow run.
 3. Confirm both validation and migration steps are green.
-4. Confirm the tables in Supabase.
+4. Confirm the tables in Supabase after the PHP deployment runs migrations.
 
 If the workflow fails, do not repeatedly rerun it blindly. Read the failing
 step, check the connection secret, and verify that the migration has not
@@ -304,14 +309,14 @@ URL as a permanent production domain. Never commit the ngrok token.
 - **`password authentication failed`:** copy the Supabase database password
   again and confirm the pooler username, host, and port.
 - **Prisma `P1001`:** check network access and use the Supabase session pooler
-  for runtime traffic; use the direct connection for migrations.
+  for validation/tooling; Laravel migrations use the configured `DB_*` values.
 - **Prisma URL parse/authentication error:** `DIRECT_URL` must be a PostgreSQL
   URL beginning with `postgresql://`, not the Supabase dashboard URL beginning
   with `https://`. URL-encode special characters in passwords inside the URL.
 - **Prisma says `DIRECT_URL` is missing:** confirm it is present in local `.env`
   and as a GitHub Secret.
-- **Workflow says no migrations found:** generate the first migration locally
-  with `npx prisma migrate dev --name init`, commit `prisma/migrations/`, and
-  push it.
+- **Workflow schema validation fails:** run `npx prisma validate` locally,
+  correct the compatibility schema, and apply application changes through a
+  reviewed Laravel migration.
 - **Port 8000 is busy:** use `php artisan serve --port=8001` and update
   `APP_URL`.

@@ -1,4 +1,4 @@
-name: Supabase schema
+name: Validate database schema
 
 on:
   push:
@@ -31,5 +31,5 @@ jobs:
         run: npm install
       - name: Validate Prisma schema
         run: npm run prisma:validate
-      - name: Apply Prisma migrations
-        run: npm run prisma:migrate
+      - name: Database migrations
+        run: echo "Laravel migrations are applied by the PHP deployment; Prisma validation completed."
