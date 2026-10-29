@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Oculo — Precision vision, signature style</title>
+    <title>MOA — Precision vision, signature style</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Lobster&display=swap" rel="stylesheet">
@@ -14,9 +14,9 @@
 <body>
     <div class="app-shell">
         <header class="site-header">
-            <a class="brand" href="#home" aria-label="Oculo home">
+            <a class="brand" href="#home" aria-label="MOA home">
                 <span class="brand-mark"><i></i><i></i></span>
-                <span>oculo</span>
+                <span>MOA</span>
             </a>
             <nav class="main-nav" aria-label="Main navigation">
                 <a class="active" href="#home">Home</a>
@@ -34,16 +34,16 @@
         <main>
             <section class="hero" id="home">
                 <div class="hero-copy">
-                    <div class="eyebrow"><span class="eyebrow-line"></span> Independent optical studio · Est. 2012</div>
-                    <h1>See the world<br><em>your way.</em></h1>
-                    <p class="hero-text">Precision eye care and considered eyewear, made personal. Discover a clearer perspective on your everyday.</p>
+                    <div class="eyebrow"><span class="eyebrow-line"></span> The Cabagte Studio· Est. 6767</div>
+                    <h1>Your Vision and<br><em>Eye Care Specialist</em></h1>
+                    <p class="hero-text">et al et al et al et al et al et al et al et al et al et al et al et al</p>
                     <div class="hero-actions">
                         <button class="button button-dark" data-open-booking>Find your frames <span>↗</span></button>
-                        <a class="play-link" href="#about"><span class="play-icon">▶</span> Why Oculo</a>
+                        <a class="play-link" href="#about"><span class="play-icon">▶</span> Why MOA?</a>
                     </div>
                     <div class="hero-proof">
                         <div class="avatar-stack"><span>AM</span><span>JS</span><span>RK</span><b>+</b></div>
-                        <div><strong>4.9 / 5</strong><small>Loved by 2,000+ patients</small></div>
+                        <div><strong>4.9 / 5</strong><small>Loved by 6767+ patients</small></div>
                     </div>
                 </div>
                 <div class="hero-visual">
@@ -51,9 +51,9 @@
                     <div class="hero-image">
                         <img src="https://images.unsplash.com/photo-1574258495973-f010dfbb5371?auto=format&fit=crop&w=1000&q=85" alt="Woman wearing stylish translucent glasses">
                     </div>
-                    <div class="floating-card card-top"><span class="mini-icon">✦</span><div><b>Thoughtfully<br>selected</b><small>Frames from $120</small></div></div>
+                    <div class="floating-card card-top"><span class="mini-icon">✦</span><div><b>Thoughtfully<br>selected</b><small>Frames starts at ₱1</small></div></div>
                     <div class="floating-card card-bottom"><span class="trend-line">↗</span><div><b>98%</b><small>Patient satisfaction</small></div></div>
-                    <div class="circle-label">OCULO<br><span>STUDIO</span></div>
+                    <div class="circle-label">MOA<br><span>CLINIC</span></div>
                 </div>
             </section>
 
@@ -63,7 +63,7 @@
 
             <section class="section catalog-section" id="catalog">
                 <div class="section-heading">
-                    <div><div class="eyebrow"><span class="eyebrow-line"></span> The collection</div><h2>Find your <em>signature.</em></h2></div>
+                    <div><div class="eyebrow"><span class="eyebrow-line"></span> The collection</div><h2>Find your <em>style</em></h2></div>
                     <a href="#catalog" class="underlined-link">View all frames <span>↗</span></a>
                 </div>
                 <div class="filter-row" role="tablist" aria-label="Filter frames">
@@ -93,21 +93,21 @@
             </section>
 
             <section class="experience-section" id="services">
-                <div class="experience-image"><img src="https://images.unsplash.com/photo-1625591340248-3f3e5e1a5b42?auto=format&fit=crop&w=1000&q=85" alt="Eye examination at Oculo"></div>
+                <div class="experience-image"><img src="https://images.unsplash.com/photo-1625591340248-3f3e5e1a5b42?auto=format&fit=crop&w=1000&q=85" alt="Eye examination at MOA"></div>
                 <div class="experience-copy"><div class="eyebrow"><span class="eyebrow-line"></span> More than a check-up</div><h2>Clarity is a<br><em>beautiful thing.</em></h2><p>From your first eye exam to the frame you never want to take off, we make every part of your eye care feel effortless.</p><div class="service-list"><div><span>01</span><strong>Comprehensive eye exams</strong><small>Clear answers, not just a prescription.</small></div><div><span>02</span><strong>Personal styling</strong><small>Find frames that feel like you.</small></div><div><span>03</span><strong>Contact lens fitting</strong><small>Comfortable vision, all day long.</small></div></div><button class="button button-outline" data-open-booking>Explore our services <span>↗</span></button></div>
             </section>
 
             <section class="quote-section" id="about">
-                <div class="quote-mark">“</div><blockquote>Oculo made eye care feel less clinical and a lot more <em>like me.</em></blockquote><div class="quote-author"><span class="author-avatar">JM</span><div><strong>Julia Martinez</strong><small>Oculo patient since 2019</small></div><span class="quote-arrows">← &nbsp; 01 / 03 &nbsp; →</span></div>
+                <div class="quote-mark">“</div><blockquote>MOA made eye care feel less clinical and a lot more <em>like me.</em></blockquote><div class="quote-author"><span class="author-avatar">JM</span><div><strong>Julia Martinez</strong><small>MOA patient since 2019</small></div><span class="quote-arrows">← &nbsp; 01 / 03 &nbsp; →</span></div>
             </section>
         </main>
-        <footer><a class="brand" href="#home"><span class="brand-mark"><i></i><i></i></span><span>oculo</span></a><span>© {{ date('Y') }} Oculo Studio. See beautifully.</span><span>Brooklyn · New York</span></footer>
+        <footer><a class="brand" href="#home"><span class="brand-mark"><i></i><i></i></span><span>MOA</span></a><span>© {{ date('Y') }} MOA Studio. See beautifully.</span><span>Brooklyn · New York</span></footer>
     </div>
 
     <div class="modal-backdrop" data-modal="booking" hidden>
         <div class="modal booking-modal" role="dialog" aria-modal="true" aria-labelledby="booking-title">
             <button class="modal-close" data-close-modal>×</button>
-            <div class="modal-kicker">OCULO APPOINTMENTS</div><h2 id="booking-title">Let’s find your<br><em>clearer day.</em></h2>
+            <div class="modal-kicker">MOA APPOINTMENTS</div><h2 id="booking-title">Let’s find your<br><em>clearer day.</em></h2>
             <div class="stepper"><span class="step active">01 <b>Service</b></span><span class="step">02 <b>Time</b></span><span class="step">03 <b>Your details</b></span></div>
             <form id="booking-form">
                 <div class="booking-step active-step" data-step="1"><label>What can we help with?</label><div class="choice-grid"><button type="button" class="choice selected" data-choice="Comprehensive eye exam"><b>◉</b><span><strong>Eye exam</strong><small>45 min · $85</small></span></button><button type="button" class="choice" data-choice="Frame styling"><b>✧</b><span><strong>Frame styling</strong><small>30 min · Complimentary</small></span></button><button type="button" class="choice" data-choice="Contact lens fitting"><b>◌</b><span><strong>Contact lenses</strong><small>30 min · $45</small></span></button></div></div>
@@ -118,6 +118,34 @@
             <div class="booking-success" hidden><div class="success-icon">✓</div><h3>You’re all booked.</h3><p>We’ll see you Tuesday, June 24 at 9:00 AM. A confirmation is on its way to your inbox.</p><button class="button button-dark" data-close-modal>Done</button></div>
         </div>
     </div>
-    <div class="modal-backdrop" data-modal="auth" hidden><div class="modal auth-modal"><button class="modal-close" data-close-modal>×</button><div class="modal-kicker">WELCOME BACK</div><h2>Your vision,<br>is our vision eme.</h2><p class="modal-intro">Log in to view your appointments, prescriptions, and saved frames.</p><form><input type="email" placeholder="Email address"><input type="password" placeholder="Password"><button class="button button-teal">Log in <span>→</span></button></form><p class="form-foot">New to Oculo? <a href="#">Create an account</a></p></div></div>
+    <div class="modal-backdrop" data-modal="auth" hidden>
+        <div class="modal auth-modal">
+            <button class="modal-close" data-close-modal aria-label="Close authentication dialog">×</button>
+            <div class="auth-view" data-auth-view="login">
+                <div class="modal-kicker">WELCOME BACK</div>
+                <h2>Your vision<br>is our mission eme.</h2>
+                <p class="modal-intro">blah blah blah ang qt ni aya.</p>
+                <form data-auth-form="login">
+                    <input type="email" required placeholder="Email address">
+                    <input type="password" required placeholder="Password">
+                    <button type="submit" class="button button-teal">Log in <span>→</span></button>
+                </form>
+                <p class="form-foot">New to bomboclat? <button type="button" class="auth-link" data-auth-switch="register">Create an account</button></p>
+            </div>
+            <div class="auth-view" data-auth-view="register" hidden>
+                <div class="modal-kicker">JOIN OCULO</div>
+                <h2>Make room for<br><em>clearer days.</em></h2>
+                <p class="modal-intro">Create your patient account to manage appointments, prescriptions, and saved frames.</p>
+                <form data-auth-form="register">
+                    <input type="text" required placeholder="Full name">
+                    <input type="email" required placeholder="Email address">
+                    <input type="tel" required placeholder="Phone number">
+                    <input type="password" required minlength="8" placeholder="Password (8+ characters)">
+                    <button type="submit" class="button button-teal">Create account <span>→</span></button>
+                </form>
+                <p class="form-foot">Already have an account? <button type="button" class="auth-link" data-auth-switch="login">Log in</button></p>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

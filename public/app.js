@@ -12,6 +12,18 @@ const modal = (name, open) => {
 
 document.querySelectorAll('[data-open-booking]').forEach((button) => button.addEventListener('click', () => modal('booking', true)));
 document.querySelectorAll('[data-open-auth]').forEach((button) => button.addEventListener('click', () => modal('auth', true)));
+document.querySelectorAll('[data-auth-switch]').forEach((button) => button.addEventListener('click', () => {
+    document.querySelectorAll('[data-auth-view]').forEach((view) => {
+        view.hidden = view.dataset.authView !== button.dataset.authSwitch;
+    });
+}));
+document.querySelectorAll('[data-auth-form]').forEach((form) => form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    if (!form.reportValidity()) return;
+    const submit = form.querySelector('button[type="submit"]');
+    submit.textContent = form.dataset.authForm === 'register' ? 'Account created ✓' : 'Logged in ✓';
+    submit.disabled = true;
+}));
 document.querySelectorAll('[data-close-modal]').forEach((button) => button.addEventListener('click', () => {
     const backdrop = button.closest('.modal-backdrop');
     if (backdrop) {
