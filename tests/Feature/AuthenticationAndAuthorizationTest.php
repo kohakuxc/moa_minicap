@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use App\Models\DoctorAvailability;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
@@ -72,5 +73,34 @@ class AuthenticationAndAuthorizationTest extends TestCase
             'service' => 'Comprehensive eye exam',
             'status' => 'requested',
         ]);
+    }
+
+    public function test_doctor_can_publish_availability_and_manage_requests(): void
+    {
+        $doctor = User::factory()->create([
+            'role' => 'doctor',
+            'email_verified_at' => now(),
+        ]);
+        $patient = User::factory()->create(['email_verified_at' => now()]);
+        $startsAt = now()->addWeek()->nextWeekday()->setTime(9, 0);
+
+        $this->actingAs($doctor)->post('/admin/availability', [
+            'starts_at' => $startsAt->toDateTimeString(),
+            'ends_at' => $startsAt->copy()->addHours(8)->toDateTimeString(),
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('doctor_availabilities', ['doctor_id' => $doctor->id]);
+
+        $this->actingAs($patient)->postJson('/appointments', [
+            'service' => 'Comprehensive eye exam',
+            'starts_at' => $startsAt->toDateTimeString(),
+        ])->assertCreated();
+
+        $appointment = $patient->appointments()->firstOrFail();
+        $this->actingAs($doctor)->patchJson("/admin/appointments/{$appointment->id}", [
+            'status' => 'confirmed',
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('appointments', ['id' => $appointment->id, 'status' => 'confirmed']);
     }
 }

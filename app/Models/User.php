@@ -42,6 +42,16 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Appointment::class);
     }
 
+    public function doctorAppointments()
+    {
+        return $this->hasMany(Appointment::class, 'doctor_id');
+    }
+
+    public function availabilities()
+    {
+        return $this->hasMany(DoctorAvailability::class, 'doctor_id');
+    }
+
     public function prescriptions()
     {
         return $this->hasMany(Prescription::class);
@@ -49,7 +59,12 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        return $this->role === 'admin' || $this->role === 'doctor';
+    }
+
+    public function isDoctor(): bool
+    {
+        return $this->role === 'doctor' || $this->role === 'admin';
     }
 
     /**
