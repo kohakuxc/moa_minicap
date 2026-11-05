@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Appointment;
+use App\Models\DoctorAvailability;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class AppointmentController extends Controller
 {
@@ -10,12 +14,74 @@ class AppointmentController extends Controller
     {
         $validated = $request->validate([
             'service' => ['required', 'string', 'max:100'],
-            'specialist' => ['nullable', 'string', 'max:120'],
             'starts_at' => ['required', 'date', 'after:now'],
             'notes' => ['nullable', 'string', 'max:2000'],
         ]);
-        $appointment = $request->user()->appointments()->create($validated);
+        $startsAt = now()->parse($validated['starts_at']);
+        abort_if($startsAt->isWeekend(), 422, 'Appointments are available Monday-Friday only.');
 
-        return response()->json(['message' => 'Appointment request received.', 'id' => $appointment->id], 201);
+        $doctor = User::whereIn('role', ['doctor', 'admin'])->first();
+        $hasPublishedAvailability = $doctor
+            ? DoctorAvailability::where('doctor_id', $doctor->id)->exists()
+            : false;
+        abort_unless(
+            ! $doctor || ! $hasPublishedAvailability || DoctorAvailability::where('doctor_id', $doctor->id)
+                ->where('is_available', true)
+                ->where('starts_at', '<=', $startsAt)
+                ->where('ends_at', '>=', $startsAt->copy()->addHour())
+                ->exists(),
+            422,
+            'That time is not in the doctor’s availability.'
+        );
+        abort_if(
+            $doctor && Appointment::where('doctor_id', $doctor->id)
+                ->where('starts_at', $startsAt)
+                ->whereNotIn('status', ['cancelled', 'rejected'])
+                ->exists(),
+            422,
+            'That time has already been requested.'
+        );
+        abort_if(
+            $request->user()->appointments()->whereDate('starts_at', $startsAt->toDateString())
+                ->whereNotIn('status', ['cancelled', 'rejected'])->exists(),
+            422,
+            'You already have an appointment on that day.'
+        );
+
+        $appointment = $request->user()->appointments()->create([
+            'doctor_id' => $doctor?->id,
+            'service' => $validated['service'],
+            'specialist' => $doctor?->name,
+            'starts_at' => $startsAt,
+            'notes' => $validated['notes'] ?? null,
+            'status' => 'requested',
+        ]);
+
+        return $request->expectsJson()
+            ? response()->json(['message' => 'Appointment request received.', 'id' => $appointment->id], 201)
+            : back()->with('success', 'Appointment request received.');
+    }
+
+    public function slots(Request $request)
+    {
+        $validated = $request->validate(['date' => ['required', 'date', 'after_or_equal:today']]);
+        $date = now()->parse($validated['date'])->toDateString();
+        $doctor = User::whereIn('role', ['doctor', 'admin'])->first();
+
+        $slots = $doctor
+            ? DoctorAvailability::where('doctor_id', $doctor->id)
+                ->where('is_available', true)
+                ->whereDate('starts_at', $date)
+                ->orderBy('starts_at')->get()
+                ->filter(fn (DoctorAvailability $availability) => !Appointment::where('doctor_id', $doctor->id)
+                    ->where('starts_at', $availability->starts_at)
+                    ->whereNotIn('status', ['cancelled', 'rejected'])->exists())
+                ->map(fn (DoctorAvailability $availability) => [
+                    'value' => $availability->starts_at->toDateTimeString(),
+                    'label' => $availability->starts_at->format('g:i A'),
+                ])->values()
+            : collect();
+
+        return response()->json(['data' => $slots]);
     }
 }

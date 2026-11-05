@@ -9,12 +9,12 @@ class AppointmentPolicy
 {
     public function view(User $user, Appointment $appointment): bool
     {
-        return $user->isAdmin() || $appointment->user_id === $user->id;
+        return $user->isDoctor() || $appointment->user_id === $user->id;
     }
 
     public function update(User $user, Appointment $appointment): bool
     {
-        return $user->isAdmin();
+        return $user->isDoctor();
     }
 
     public function delete(User $user, Appointment $appointment): bool

@@ -138,6 +138,20 @@ php artisan migrate
 This creates users, sessions, appointments, prescriptions, and audit logs.
 Inspect migration files before committing changes.
 
+The appointment workflow uses two application roles:
+
+- `patient`: requests appointments, views status/history, and cancels future requests with a reason.
+- `doctor`: publishes weekday availability, confirms/reschedules/completes requests, and records rejection or cancellation reasons.
+
+For local demos, `php artisan db:seed` creates:
+
+| Role | Email | Password |
+|---|---|---|
+| Doctor | `doctor@moa.test` | `password` |
+| Patient | `patient@moa.test` | `password` |
+
+Change these credentials before using a shared or production database.
+
 Check the migration status:
 
 ```powershell
