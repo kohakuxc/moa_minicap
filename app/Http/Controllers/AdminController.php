@@ -6,15 +6,19 @@ use App\Models\Appointment;
 use App\Models\AuditLog;
 use App\Models\Prescription;
 use App\Models\User;
+use App\Models\DoctorAvailability;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rule;
 
 class AdminController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         return view('dashboard.admin', [
             'patients' => User::where('role', 'patient')->latest()->paginate(15),
-            'appointments' => Appointment::with('user')->latest('starts_at')->paginate(15, ['*'], 'appointments'),
+            'appointments' => Appointment::with(['user', 'doctor'])->latest('starts_at')->paginate(15, ['*'], 'appointments'),
+            'availability' => $request->user()->availabilities()->where('starts_at', '>=', now())->orderBy('starts_at')->get(),
             'prescriptions' => Prescription::with('user')->latest('issued_at')->paginate(15, ['*'], 'prescriptions'),
             'counts' => [
                 'patients' => User::where('role', 'patient')->count(),
@@ -26,9 +30,20 @@ class AdminController extends Controller
 
     public function updateAppointment(Request $request, Appointment $appointment)
     {
-        $this->authorize('update', $appointment);
-        $validated = $request->validate(['status' => ['required', 'in:requested,confirmed,completed,cancelled']]);
-        $appointment->update($validated);
+        Gate::authorize('update', $appointment);
+        $validated = $request->validate([
+            'status' => ['required', Rule::in(['requested', 'confirmed', 'in_progress', 'completed', 'rejected', 'cancelled', 'rescheduled'])],
+            'starts_at' => ['nullable', 'date', 'after:now'],
+            'reason' => ['nullable', 'string', 'max:1000'],
+        ]);
+        if (in_array($validated['status'], ['rejected', 'cancelled', 'rescheduled'], true) && blank($validated['reason'])) {
+            return back()->withErrors(['reason' => 'A reason is required for this status.']);
+        }
+        $appointment->update(array_filter([
+            'status' => $validated['status'],
+            'starts_at' => $validated['starts_at'] ?? null,
+            'reason' => $validated['reason'] ?? null,
+        ], fn ($value) => $value !== null));
         AuditLog::create([
             'actor_id' => $request->user()->id,
             'action' => 'appointment.status_updated',
@@ -39,9 +54,21 @@ class AdminController extends Controller
         return back()->with('success', 'Appointment status updated.');
     }
 
+    public function storeAvailability(Request $request)
+    {
+        $validated = $request->validate([
+            'starts_at' => ['required', 'date', 'after:now'],
+            'ends_at' => ['required', 'date', 'after:starts_at'],
+        ]);
+        abort_if(now()->parse($validated['starts_at'])->isWeekend(), 422, 'Availability must be on a weekday.');
+        $request->user()->availabilities()->create($validated);
+
+        return back()->with('success', 'Availability added.');
+    }
+
     public function storePrescription(Request $request, User $user)
     {
-        $this->authorize('create', Prescription::class);
+        Gate::authorize('create', Prescription::class);
         $validated = $request->validate([
             'eye' => ['required', 'in:OD,OS'],
             'sphere' => ['nullable', 'numeric', 'between:-30,30'],

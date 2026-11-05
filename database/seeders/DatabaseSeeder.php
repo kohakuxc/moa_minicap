@@ -3,8 +3,10 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Models\DoctorAvailability;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -15,11 +17,28 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        User::updateOrCreate(['email' => 'doctor@moa.test'], [
+            'name' => 'MOA Doctor',
+            'role' => 'doctor',
+            'phone' => '555-0100',
+            'password' => Hash::make('password'),
+            'email_verified_at' => now(),
+        ]);
+        User::updateOrCreate(['email' => 'patient@moa.test'], [
+            'name' => 'MOA Patient',
+            'role' => 'patient',
+            'phone' => '555-0101',
+            'password' => Hash::make('password'),
+            'email_verified_at' => now(),
+        ]);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $doctor = User::where('email', 'doctor@moa.test')->firstOrFail();
+        $nextWeekday = now()->addWeek()->nextWeekday()->setTime(9, 0);
+        DoctorAvailability::firstOrCreate([
+            'doctor_id' => $doctor->id,
+            'starts_at' => $nextWeekday,
+        ], [
+            'ends_at' => $nextWeekday->copy()->addHours(8),
         ]);
     }
 }

@@ -44,6 +44,7 @@ Route::post('/email/verification-notification', [AuthController::class, 'sendVer
 Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::get('/dashboard', [PatientController::class, 'dashboard'])->name('dashboard');
     Route::post('/appointments', [AppointmentController::class, 'store'])->name('appointments.store');
+    Route::get('/appointment-slots', [AppointmentController::class, 'slots'])->name('appointments.slots');
     Route::patch('/profile', [PatientController::class, 'updateProfile'])->name('profile.update');
     Route::delete('/appointments/{appointment}', [PatientController::class, 'cancelAppointment'])->name('appointments.cancel');
 });
@@ -51,5 +52,6 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
 Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.')->group(function (): void {
     Route::get('/', [AdminController::class, 'index'])->name('dashboard');
     Route::patch('/appointments/{appointment}', [AdminController::class, 'updateAppointment'])->name('appointments.update');
+    Route::post('/availability', [AdminController::class, 'storeAvailability'])->name('availability.store');
     Route::post('/patients/{user}/prescriptions', [AdminController::class, 'storePrescription'])->name('prescriptions.store');
 });

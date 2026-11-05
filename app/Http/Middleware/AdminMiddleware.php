@@ -11,7 +11,7 @@ class AdminMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
-        abort_unless(Gate::allows('admin'), 403);
+        abort_unless(Gate::allows('doctor'), 403);
 
         return $next($request);
     }
