@@ -5,9 +5,6 @@
     "scripts": {
         "build": "vite build",
         "dev": "vite",
-        "serve:local": "php artisan serve --host=0.0.0.0 --port=8000",
-        "tunnel": "ngrok http 8000",
-        "dev:public": "concurrently --kill-others-on-fail \"npm run serve:local\" \"npm run tunnel\"",
         "prisma:generate": "prisma generate",
         "prisma:validate": "prisma validate",
         "prisma:migrate": "prisma migrate deploy"

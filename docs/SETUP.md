@@ -283,83 +283,17 @@ application with a harmless read-only request. Keep database migrations in the
 GitHub Actions workflow rather than running destructive commands on every web
 server restart.
 
-## 11. Test on a phone or with colleagues using ngrok
+## 11. Test on a phone with ngrok
 
-ngrok does not require CORS configuration for this application because it
-forwards the browser's same-origin requests to Laravel. Do not add `*` CORS
-rules or expose database credentials. The one setting that matters for
-Laravel-generated verification and password-reset links is `APP_URL`.
-
-### One-time ngrok setup
-
-Install ngrok, create an account, and configure its token once:
+With Laravel running locally:
 
 ```powershell
 ngrok config add-authtoken YOUR_NGROK_TOKEN
-```
-
-### Recommended two-terminal workflow
-
-Terminal 1:
-
-```powershell
-cd D:\MOASystem
-php artisan serve --host=0.0.0.0 --port=8000
-```
-
-Terminal 2:
-
-```powershell
 ngrok http 8000
 ```
 
-Copy the `https://...ngrok...` forwarding URL printed by ngrok. In `.env`,
-temporarily set:
-
-```dotenv
-APP_URL=https://YOUR-NGROK-DOMAIN.ngrok-free.app
-NGROK_URL=https://YOUR-NGROK-DOMAIN.ngrok-free.app
-SESSION_SECURE_COOKIE=true
-```
-
-Use the exact URL displayed by your ngrok session. Then clear Laravel's cached
-configuration:
-
-```powershell
-php artisan config:clear
-```
-
-Your colleagues can now open the HTTPS forwarding URL. They do not need your
-local IP address or a separate database. The application still reads and
-writes to the configured Supabase database.
-
-When the ngrok URL changes, update `APP_URL`, `NGROK_URL`, and clear config
-again. This is especially important before sending verification or password
-reset emails, because those links are signed using the current application
-URL.
-
-### Optional one-command workflow
-
-From `D:\MOASystem`, after `npm install`:
-
-```powershell
-npm run dev:public
-```
-
-This starts Laravel on `0.0.0.0:8000` and ngrok concurrently. You still need
-to copy the generated HTTPS URL into `.env` and run `php artisan config:clear`
-when the URL changes. Stop both processes with `Ctrl+C`.
-
-### ngrok safety
-
-- Share only the HTTPS forwarding URL.
-- Do not share the ngrok dashboard URL or auth token.
-- Use fake patient data for demos.
-- Stop the tunnel when colleagues no longer need access.
-- Do not use the temporary URL as a production domain.
-- Do not expose Supabase URLs, passwords, API keys, or `.env` contents.
-- Consider ngrok access controls/password protection before exposing
-  authenticated patient data.
+Open the displayed HTTPS forwarding URL on your phone. Do not use the ngrok
+URL as a permanent production domain. Never commit the ngrok token.
 
 ## 12. Troubleshooting
 

@@ -78,7 +78,8 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'You are now logged in.',
-            'user' => $request->user()->only(['id', 'name', 'email', 'phone']),
+            'user' => $request->user()->only(['id', 'name', 'email', 'phone', 'role']),
+            'redirect' => $request->user()->isAdmin() ? '/admin' : '/profile/create',
         ]);
     }
 

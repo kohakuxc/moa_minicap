@@ -12,6 +12,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/login', fn () => redirect('/'))->name('login');
+
 Route::post('/auth/register', [AuthController::class, 'register'])
     ->middleware('guest')
     ->name('auth.register');
@@ -36,12 +38,13 @@ Route::get('/email/verify', fn () => view('auth.verify-email'))
     ->middleware('auth')->name('verification.notice');
 Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
     $request->fulfill();
-    return redirect('/dashboard')->with('success', 'Email verified.');
+    return redirect('/profile/create')->with('success', 'Email verified. Please complete your profile.');
 })->middleware(['auth', 'signed', 'throttle:6,1'])->name('verification.verify');
 Route::post('/email/verification-notification', [AuthController::class, 'sendVerification'])
     ->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
 Route::middleware(['auth', 'verified'])->group(function (): void {
+    Route::get('/profile/create', [PatientController::class, 'createProfile'])->name('profile.create');
     Route::get('/dashboard', [PatientController::class, 'dashboard'])->name('dashboard');
     Route::post('/appointments', [AppointmentController::class, 'store'])->name('appointments.store');
     Route::patch('/profile', [PatientController::class, 'updateProfile'])->name('profile.update');

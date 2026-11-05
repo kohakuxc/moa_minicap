@@ -34,9 +34,15 @@ document.querySelectorAll('[data-auth-form]').forEach((form) => form.addEventLis
         credentials: 'same-origin',
         body: JSON.stringify(payload),
     }).then(async (response) => {
-        const data = await response.json();
+        const contentType = response.headers.get('content-type') || '';
+        const data = contentType.includes('application/json')
+            ? await response.json()
+            : { message: 'The server returned an unexpected response. Please refresh and try again.' };
         if (!response.ok) throw new Error(Object.values(data.errors || {}).flat()[0] || data.message || 'Unable to complete authentication.');
         submit.textContent = type === 'register' ? 'Account created ✓' : 'Logged in ✓';
+        window.location.assign(type === 'register'
+            ? '/email/verify'
+            : (data.redirect || (data.user?.role === 'admin' ? '/admin' : '/profile/create')));
     }).catch((requestError) => {
         error.textContent = requestError.message;
         error.hidden = false;
@@ -98,8 +104,13 @@ document.querySelector('[data-next]')?.addEventListener('click', () => {
             credentials: 'same-origin',
             body: JSON.stringify({ service, starts_at: `${date} ${time}:00` }),
         }).then(async (response) => {
+            if (response.status === 401 || response.status === 302 || response.redirected) {
+                modal('booking', false);
+                modal('auth', true);
+                document.querySelectorAll('[data-auth-view]').forEach((view) => { view.hidden = view.dataset.authView !== 'login'; });
+                return;
+            }
             const data = await response.json();
-            if (response.status === 401 || response.status === 302) throw new Error('Please log in and verify your email before booking.');
             if (!response.ok) throw new Error(Object.values(data.errors || {}).flat()[0] || data.message || 'Unable to request appointment.');
             form.hidden = true;
             document.querySelector('.booking-success').hidden = false;

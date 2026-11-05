@@ -11,12 +11,21 @@ class PatientController extends Controller
     {
         $user = $request->user();
 
+        if (! $user->profile_completed_at) {
+            return redirect()->route('profile.create');
+        }
+
         return view('dashboard.patient', [
             'user' => $user,
             'upcomingAppointments' => $user->appointments()->where('starts_at', '>=', now())->orderBy('starts_at')->get(),
             'pastAppointments' => $user->appointments()->where('starts_at', '<', now())->latest('starts_at')->limit(10)->get(),
             'prescriptions' => $user->prescriptions()->latest('issued_at')->get(),
         ]);
+    }
+
+    public function createProfile(Request $request)
+    {
+        return view('profile.create', ['user' => $request->user()]);
     }
 
     public function updateProfile(Request $request)
@@ -30,9 +39,9 @@ class PatientController extends Controller
         if ($validated['email'] !== $user->email) {
             $user->forceFill(['email' => $validated['email'], 'email_verified_at' => null]);
         }
-        $user->fill($validated)->save();
+        $user->fill($validated)->forceFill(['profile_completed_at' => now()])->save();
 
-        return back()->with('success', 'Profile updated.');
+        return redirect()->route('dashboard')->with('success', 'Profile saved.');
     }
 
     public function cancelAppointment(Request $request, int $appointment)

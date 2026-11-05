@@ -58,12 +58,12 @@
             </section>
 
             <section class="trusted-row">
-                <span>AS SEEN IN</span><b>VOGUE</b><b>monocle</b><b>GQ</b><b>hypebeast</b><b>THE CUT</b>
+                <span>AS SEEN IN</span><b>VOGUE</b><b>GUCCI</b><b>bbq</b><b>hypebeast</b><b>supremo</b>
             </section>
 
             <section class="section catalog-section" id="catalog">
                 <div class="section-heading">
-                    <div><div class="eyebrow"><span class="eyebrow-line"></span> The collection</div><h2>Find your <em>style</em></h2></div>
+                    <div><div class="eyebrow"><span class="eyebrow-line"></span> Our collection</div><h2>Find your <em>style</em></h2></div>
                     <a href="#catalog" class="underlined-link">View all frames <span>↗</span></a>
                 </div>
                 <div class="filter-row" role="tablist" aria-label="Filter frames">
@@ -75,44 +75,44 @@
                 <div class="product-grid">
                     <article class="product-card" data-category="optical new">
                         <div class="product-image peach"><span class="product-badge">New</span><button aria-label="Save frame" class="heart">♡</button><img src="https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=700&q=80" alt="Clear acetate eyewear"></div>
-                        <div class="product-info"><div><h3>Haze 01</h3><p>Honey crystal · Optical</p></div><strong>$180</strong></div>
+                        <div class="product-info"><div><h3>Haze 01</h3><p>Honey crystal · Optical</p></div><strong>PHP1800</strong></div>
                     </article>
                     <article class="product-card" data-category="sun">
                         <div class="product-image sand"><button aria-label="Save frame" class="heart">♡</button><img src="https://images.unsplash.com/photo-1510172951991-856a654063f9?auto=format&fit=crop&w=700&q=80" alt="Black round sunglasses"></div>
-                        <div class="product-info"><div><h3>Sol 02</h3><p>Ink black · Sunglasses</p></div><strong>$210</strong></div>
+                        <div class="product-info"><div><h3>Sol 02</h3><p>Ink black · Sunglasses</p></div><strong>PHP2100</strong></div>
                     </article>
                     <article class="product-card" data-category="optical">
                         <div class="product-image lavender"><button aria-label="Save frame" class="heart">♡</button><img src="https://images.unsplash.com/photo-1577803645773-f96470509666?auto=format&fit=crop&w=700&q=80" alt="Tortoiseshell glasses"></div>
-                        <div class="product-info"><div><h3>Form 03</h3><p>Dark tortoise · Optical</p></div><strong>$195</strong></div>
+                        <div class="product-info"><div><h3>Form 03</h3><p>Dark tortoise · Optical</p></div><strong>PHP1950</strong></div>
                     </article>
                     <article class="product-card" data-category="sun new">
                         <div class="product-image blue"><span class="product-badge">New</span><button aria-label="Save frame" class="heart">♡</button><img src="https://images.unsplash.com/photo-1508296695146-257a814070b4?auto=format&fit=crop&w=700&q=80" alt="Modern sunglasses"></div>
-                        <div class="product-info"><div><h3>Arc 04</h3><p>Tea green · Sunglasses</p></div><strong>$225</strong></div>
+                        <div class="product-info"><div><h3>Arc 04</h3><p>Tea green · Sunglasses</p></div><strong>PHP2250</strong></div>
                     </article>
                 </div>
             </section>
 
             <section class="experience-section" id="services">
-                <div class="experience-image"><img src="https://images.unsplash.com/photo-1625591340248-3f3e5e1a5b42?auto=format&fit=crop&w=1000&q=85" alt="Eye examination at MOA"></div>
+                <div class="experience-image"><img src="asset\img\876960831_1675222044216492_3835854621836991119_n.jpg" alt="Eye examination at MOA"></div>
                 <div class="experience-copy"><div class="eyebrow"><span class="eyebrow-line"></span> More than a check-up</div><h2>Clarity is a<br><em>beautiful thing.</em></h2><p>From your first eye exam to the frame you never want to take off, we make every part of your eye care feel effortless.</p><div class="service-list"><div><span>01</span><strong>Comprehensive eye exams</strong><small>Clear answers, not just a prescription.</small></div><div><span>02</span><strong>Personal styling</strong><small>Find frames that feel like you.</small></div><div><span>03</span><strong>Contact lens fitting</strong><small>Comfortable vision, all day long.</small></div></div><button class="button button-outline" data-open-booking>Explore our services <span>↗</span></button></div>
             </section>
 
             <section class="quote-section" id="about">
-                <div class="quote-mark">“</div><blockquote>MOA made eye care feel less clinical and a lot more <em>like me.</em></blockquote><div class="quote-author"><span class="author-avatar">JM</span><div><strong>Julia Martinez</strong><small>MOA patient since 2019</small></div><span class="quote-arrows">← &nbsp; 01 / 03 &nbsp; →</span></div>
+                <div class="quote-mark">“</div><blockquote>MOA made eye care feel less clinical and a lot more <em>like me.</em></blockquote><div class="quote-author"><span class="author-avatar">JM</span><div><strong>Johnmar Manalo</strong><small>MOA patient since 2019</small></div><span class="quote-arrows">← &nbsp; 01 / 03 &nbsp; →</span></div>
             </section>
         </main>
-        <footer><a class="brand" href="#home"><span class="brand-mark"><i></i><i></i></span><span>MOA</span></a><span>© {{ date('Y') }} MOA Studio. See beautifully.</span><span>Brooklyn · New York</span></footer>
+        <footer><a class="brand" href="#home"><span class="brand-mark"><i></i><i></i></span><span>MOA</span></a><span>© {{ date('Y') }} MOA Studio. See beautifully.</span><span>COA · Quezon City</span></footer>
     </div>
 
     <div class="modal-backdrop" data-modal="booking" hidden>
         <div class="modal booking-modal" role="dialog" aria-modal="true" aria-labelledby="booking-title">
             <button class="modal-close" data-close-modal>×</button>
             <div class="modal-kicker">MOA APPOINTMENTS</div><h2 id="booking-title">Let’s find your<br><em>clearer day.</em></h2>
-            <div class="stepper"><span class="step active">01 <b>Service</b></span><span class="step">02 <b>Time</b></span><span class="step">03 <b>Your details</b></span></div>
+            <div class="stepper"><span class="step active">01 <b>Date</b></span><span class="step">02 <b>Care</b></span><span class="step">03 <b>Account</b></span></div>
             <form id="booking-form">
-                <div class="booking-step active-step" data-step="1"><label>What can we help with?</label><div class="choice-grid"><button type="button" class="choice selected" data-choice="Comprehensive eye exam"><b>◉</b><span><strong>Eye exam</strong><small>45 min · $85</small></span></button><button type="button" class="choice" data-choice="Frame styling"><b>✧</b><span><strong>Frame styling</strong><small>30 min · Complimentary</small></span></button><button type="button" class="choice" data-choice="Contact lens fitting"><b>◌</b><span><strong>Contact lenses</strong><small>30 min · $45</small></span></button></div></div>
-                <div class="booking-step" data-step="2"><label>Choose a time</label><div class="date-options"><button type="button" class="date selected" data-date="2026-11-24"><b>Tue</b><strong>24</strong><small>Nov</small></button><button type="button" class="date" data-date="2026-11-25"><b>Wed</b><strong>25</strong><small>Nov</small></button><button type="button" class="date" data-date="2026-11-26"><b>Thu</b><strong>26</strong><small>Nov</small></button><button type="button" class="date" data-date="2026-11-27"><b>Fri</b><strong>27</strong><small>Nov</small></button></div><div class="times"><button type="button" class="time selected" data-time="09:00">9:00 AM</button><button type="button" class="time" data-time="10:30">10:30 AM</button><button type="button" class="time" data-time="13:00">1:00 PM</button><button type="button" class="time" data-time="15:30">3:30 PM</button></div></div>
-                <div class="booking-step" data-step="3"><label for="booking-name">Your details</label><input id="booking-name" required placeholder="Full name"><input type="email" required placeholder="Email address"><input type="tel" required placeholder="Phone number"><label class="check-row"><input type="checkbox" required> I agree to receive appointment reminders.</label></div>
+                <div class="booking-step active-step" data-step="1"><label>Choose your date and time</label><div class="date-options"><button type="button" class="date selected" data-date="2026-11-24"><b>Tue</b><strong>24</strong><small>Nov</small></button><button type="button" class="date" data-date="2026-11-25"><b>Wed</b><strong>25</strong><small>Nov</small></button><button type="button" class="date" data-date="2026-11-26"><b>Thu</b><strong>26</strong><small>Nov</small></button><button type="button" class="date" data-date="2026-11-27"><b>Fri</b><strong>27</strong><small>Nov</small></button></div><div class="times"><button type="button" class="time selected" data-time="09:00">9:00 AM</button><button type="button" class="time" data-time="10:30">10:30 AM</button><button type="button" class="time" data-time="13:00">1:00 PM</button><button type="button" class="time" data-time="15:30">3:30 PM</button></div></div>
+                <div class="booking-step" data-step="2"><label>What can we help with?</label><div class="choice-grid"><button type="button" class="choice selected" data-choice="Comprehensive eye exam"><b>◉</b><span><strong>Eye exam</strong><small>45 min · PHP850</small></span></button><button type="button" class="choice" data-choice="Special case examination"><b>✦</b><span><strong>Special case exam</strong><small>For specific concerns</small></span></button><button type="button" class="choice" data-choice="Frame styling"><b>✧</b><span><strong>Frame styling</strong><small>30 min · Complimentary</small></span></button></div></div>
+                <div class="booking-step" data-step="3"><label>Create an account or log in to continue</label><p class="modal-intro">Your selected time will be checked again before the appointment is confirmed.</p><label class="check-row"><input type="checkbox" required> I agree to receive appointment reminders.</label></div>
                 <div class="form-actions"><button type="button" class="button button-quiet" data-prev hidden>Back</button><button type="button" class="button button-teal" data-next>Continue <span>→</span></button></div>
             </form>
             <div class="booking-success" hidden><div class="success-icon">✓</div><h3>You’re all booked.</h3><p>We’ll see you Tuesday, June 24 at 9:00 AM. A confirmation is on its way to your inbox.</p><button class="button button-dark" data-close-modal>Done</button></div>
