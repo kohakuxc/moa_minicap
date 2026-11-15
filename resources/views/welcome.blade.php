@@ -58,7 +58,7 @@
             </section>
 
             <section class="trusted-row">
-                <span>AS SEEN IN</span><b>VOGUE</b><b>GUCCI</b><b>bbq</b><b>hypebeast</b><b>supremo</b>
+                <span>AS SEEN IN</span><b>VOGUE</b><b>GUCCI</b><b>bbq</b><b>hypebeast</b><b>OBENZA</b>
             </section>
 
             <section class="section catalog-section" id="catalog">

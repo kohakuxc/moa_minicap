@@ -19,16 +19,60 @@ class PatientController extends Controller
             return redirect()->route('profile.create');
         }
 
-        return view('dashboard.patient', [
+        return view('patient.dashboard', [
             'user' => $user,
-            'upcomingAppointments' => $user->appointments()->where('starts_at', '>=', now())->orderBy('starts_at')->get(),
-            'pastAppointments' => $user->appointments()->where('starts_at', '<', now())->latest('starts_at')->limit(10)->get(),
-            'prescriptions' => $user->prescriptions()->latest('issued_at')->get(),
+            'upcomingCount' => $user->appointments()->where('starts_at', '>=', now())->whereNotIn('status', ['cancelled', 'rejected'])->count(),
+            'prescriptionCount' => $user->prescriptions()->count(),
+            'visitCount' => $user->appointments()->where('starts_at', '<', now())->count(),
+            'nextAppointment' => $user->appointments()->where('starts_at', '>=', now())->whereNotIn('status', ['cancelled', 'rejected'])->orderBy('starts_at')->first(),
+        ]);
+    }
+
+    public function createAppointment(Request $request)
+    {
+        return view('patient.appointments.create', ['user' => $request->user()]);
+    }
+
+    public function eyewear(Request $request)
+    {
+        return view('patient.eyewear', ['user' => $request->user()]);
+    }
+
+    public function careServices(Request $request)
+    {
+        return view('patient.care-services', ['user' => $request->user()]);
+    }
+
+    public function upcomingAppointments(Request $request)
+    {
+        return view('patient.appointments.upcoming', [
+            'user' => $request->user(),
+            'appointments' => $request->user()->appointments()->where('starts_at', '>=', now())->orderBy('starts_at')->get(),
+        ]);
+    }
+
+    public function prescriptions(Request $request)
+    {
+        return view('patient.prescriptions', [
+            'user' => $request->user(),
+            'prescriptions' => $request->user()->prescriptions()->latest('issued_at')->get(),
+        ]);
+    }
+
+    public function visitHistory(Request $request)
+    {
+        return view('patient.appointments.history', [
+            'user' => $request->user(),
+            'appointments' => $request->user()->appointments()->where('starts_at', '<', now())->latest('starts_at')->get(),
         ]);
     }
 
     public function createProfile(Request $request)
     {
+        if ($request->user()->profile_completed_at) {
+            return redirect()->route('dashboard');
+        }
+
         return view('profile.create', ['user' => $request->user()]);
     }
 

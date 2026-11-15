@@ -33,6 +33,30 @@ class AuthenticationAndAuthorizationTest extends TestCase
         Notification::assertSentTo($user, \Illuminate\Auth\Notifications\VerifyEmail::class);
     }
 
+    public function test_completed_patient_login_goes_to_dashboard(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'complete@example.com',
+            'password' => 'password123',
+            'profile_completed_at' => now(),
+        ]);
+
+        $this->postJson('/auth/login', [
+            'email' => $user->email,
+            'password' => 'password123',
+        ])->assertOk()->assertJsonPath('redirect', '/dashboard');
+    }
+
+    public function test_completed_patient_cannot_reopen_profile_setup(): void
+    {
+        $user = User::factory()->create([
+            'email_verified_at' => now(),
+            'profile_completed_at' => now(),
+        ]);
+
+        $this->actingAs($user)->get('/profile/create')->assertRedirect('/dashboard');
+    }
+
     public function test_password_reset_request_is_generic(): void
     {
         $this->postJson('/auth/forgot-password', ['email' => 'missing@example.com'])
