@@ -53,7 +53,6 @@
 <div class="modal-backdrop logout-modal-backdrop" data-logout-modal hidden>
     <section class="modal logout-modal" role="dialog" aria-modal="true" aria-labelledby="logout-title" aria-describedby="logout-description">
         <button class="modal-close" type="button" data-close-logout aria-label="Close logout dialog">×</button>
-        <div class="eyebrow">MOA PATIENT PORTAL</div>
         <h2 id="logout-title">Leave the portal?</h2>
         <p id="logout-description">You will need to sign in again to manage your appointments and care history.</p>
         <div class="logout-actions">

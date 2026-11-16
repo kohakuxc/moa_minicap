@@ -1,5 +1,3 @@
-import "./bootstrap";
-
 const modal = (name, open) => {
     const element = document.querySelector(`[data-modal="${name}"]`);
     if (!element) return;
@@ -11,6 +9,28 @@ const modal = (name, open) => {
     element.hidden = !open;
     document.body.classList.toggle("modal-open", open);
 };
+
+const siteHeader = document.querySelector(".site-header");
+const menuToggle = document.querySelector("[data-menu-toggle]");
+const closeMenu = () => {
+    siteHeader?.classList.remove("menu-open");
+    menuToggle?.setAttribute("aria-expanded", "false");
+    menuToggle?.setAttribute("aria-label", "Open menu");
+};
+
+menuToggle?.addEventListener("click", () => {
+    const isOpen = siteHeader?.classList.toggle("menu-open") ?? false;
+    menuToggle.setAttribute("aria-expanded", String(isOpen));
+    menuToggle.setAttribute("aria-label", isOpen ? "Close menu" : "Open menu");
+});
+siteHeader?.querySelectorAll(".main-nav a, .header-actions button").forEach((item) =>
+    item.addEventListener("click", closeMenu),
+);
+document.addEventListener("click", (event) => {
+    if (siteHeader?.classList.contains("menu-open") && !siteHeader.contains(event.target)) {
+        closeMenu();
+    }
+});
 
 document
     .querySelectorAll("[data-open-booking]")

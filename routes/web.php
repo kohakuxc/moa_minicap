@@ -13,6 +13,7 @@ Route::get('/', function () {
 });
 
 Route::get('/login', fn () => redirect('/'))->name('login');
+Route::get('/register', [AuthController::class, 'showRegister'])->middleware('guest')->name('register');
 
 Route::post('/auth/register', [AuthController::class, 'register'])
     ->middleware('guest')
@@ -24,15 +25,12 @@ Route::post('/auth/logout', [AuthController::class, 'logout'])
     ->middleware('auth')
     ->name('auth.logout');
 Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword'])
-    ->middleware('throttle:5,1')
+    ->middleware('guest')
     ->name('password.email');
-Route::get('/forgot-password', fn () => view('auth.forgot-password'))->name('password.request');
-Route::get('/reset-password/{token}', fn (string $token, Request $request) => view('auth.reset-password', [
-    'token' => $token,
-    'email' => $request->query('email'),
-]))->name('password.reset');
+Route::get('/forgot-password', [AuthController::class, 'showForgotPassword'])->middleware('guest')->name('password.request');
+Route::get('/reset-password/{token}', [AuthController::class, 'showResetPassword'])->middleware('guest')->name('password.reset');
 Route::post('/auth/reset-password', [AuthController::class, 'resetPassword'])
-    ->middleware('throttle:5,1')
+    ->middleware('guest')
     ->name('password.update');
 Route::get('/email/verify', fn () => view('auth.verify-email'))
     ->middleware('auth')->name('verification.notice');

@@ -13,12 +13,12 @@
 </head>
 <body>
     <div class="app-shell">
-        <header class="site-header">
-            <a class="brand" href="#home" aria-label="MOA home">
+        <div class="site-header">
+            <div class="brand" href="#home" aria-label="MOA home">
                 <span class="brand-mark"><i></i><i></i></span>
                 <span>MOA</span>
-            </a>
-            <nav class="main-nav" aria-label="Main navigation">
+            </div>
+            <nav class="main-nav" id="main-navigation" aria-label="Main navigation">
                 <a class="active" href="#home">Home</a>
                 <a href="#catalog">Catalog</a>
                 <a href="#services">Services</a>
@@ -28,13 +28,13 @@
                 <button class="text-button" data-open-auth>Log in</button>
                 <button class="button button-teal button-small" data-open-booking>Book an appointment <span>↗</span></button>
             </div>
-            <button class="menu-button" aria-label="Toggle menu">☰</button>
-        </header>
+            <button class="menu-button" type="button" data-menu-toggle aria-expanded="false" aria-controls="main-navigation" aria-label="Open menu"><span class="menu-icon" aria-hidden="true"><i></i><i></i><i></i></span></button>
+        </div>
 
         <main>
             <section class="hero" id="home">
                 <div class="hero-copy">
-                    <div class="eyebrow"><span class="eyebrow-line"></span> The Cabagte Studio· Est. 6767</div>
+                    <div class="eyebrow"><span class="eyebrow-line"></span> MOA Optical Clinic · Est. 2014</div>
                     <h1>Your Vision and<br><em>Eye Care Specialist</em></h1>
                     <p class="hero-text">et al et al et al et al et al et al et al et al et al et al et al et al</p>
                     <div class="hero-actions">
@@ -63,7 +63,7 @@
 
             <section class="section catalog-section" id="catalog">
                 <div class="section-heading">
-                    <div><div class="eyebrow"><span class="eyebrow-line"></span> Our collection</div><h2>Find your <em>style</em></h2></div>
+                    <div><h2>Find your <em>style</em></h2></div>
                     <a href="#catalog" class="underlined-link">View all frames <span>↗</span></a>
                 </div>
                 <div class="filter-row" role="tablist" aria-label="Filter frames">
@@ -94,14 +94,14 @@
 
             <section class="experience-section" id="services">
                 <div class="experience-image"><img src="asset\img\876960831_1675222044216492_3835854621836991119_n.jpg" alt="Eye examination at MOA"></div>
-                <div class="experience-copy"><div class="eyebrow"><span class="eyebrow-line"></span> More than a check-up</div><h2>Clarity is a<br><em>beautiful thing.</em></h2><p>From your first eye exam to the frame you never want to take off, we make every part of your eye care feel effortless.</p><div class="service-list"><div><span>01</span><strong>Comprehensive eye exams</strong><small>Clear answers, not just a prescription.</small></div><div><span>02</span><strong>Personal styling</strong><small>Find frames that feel like you.</small></div><div><span>03</span><strong>Contact lens fitting</strong><small>Comfortable vision, all day long.</small></div></div><button class="button button-outline" data-open-booking>Explore our services <span>↗</span></button></div>
+                <div class="experience-copy"><h2>Clarity is a<br><em>beautiful thing.</em></h2><p>From your first eye exam to the frame you never want to take off, we make every part of your eye care feel effortless.</p><div class="service-list"><div><span>01</span><strong>Comprehensive eye exams</strong><small>Clear answers, not just a prescription.</small></div><div><span>02</span><strong>Personal styling</strong><small>Find frames that feel like you.</small></div><div><span>03</span><strong>Contact lens fitting</strong><small>Comfortable vision, all day long.</small></div></div><button class="button button-outline" data-open-booking>Explore our services <span>↗</span></button></div>
             </section>
 
             <section class="quote-section" id="about">
                 <div class="quote-mark">“</div><blockquote>MOA made eye care feel less clinical and a lot more <em>like me.</em></blockquote><div class="quote-author"><span class="author-avatar">JM</span><div><strong>Johnmar Manalo</strong><small>MOA patient since 2019</small></div><span class="quote-arrows">← &nbsp; 01 / 03 &nbsp; →</span></div>
             </section>
         </main>
-        <footer><a class="brand" href="#home"><span class="brand-mark"><i></i><i></i></span><span>MOA</span></a><span>© {{ date('Y') }} MOA Studio. See beautifully.</span><span>COA · Quezon City</span></footer>
+        <footer><a class="brand" href="#home"><span class="brand-mark"><i></i><i></i></span><span>MOA</span></a><span>© {{ date('Y') }} MOA Optical Clinic. See beautifully.</span><span>COA · Quezon City</span></footer>
     </div>
 
     <div class="modal-backdrop" data-modal="booking" hidden>
@@ -129,9 +129,10 @@
                     <input type="email" name="email" required placeholder="Email address">
                     <input type="password" name="password" required placeholder="Password">
                     <p class="auth-error" data-auth-error="login" role="alert" hidden></p>
-                    <button type="submit" class="button button-teal">Log in <span>→</span></button>
+                    <button type="submit" class="button button-teal">Log in</button>
                 </form>
-                <p class="form-foot">New to bomboclat? <button type="button" class="auth-link" data-auth-switch="register">Create an account</button></p>
+                <p class="form-foot"><a class="auth-link" href="/forgot-password">Forgot your password?</a></p>
+                <p class="form-foot">New to MOA? <a class="auth-link" href="/register">Create an account</a></p>
             </div>
             <div class="auth-view" data-auth-view="register" hidden>
                 <div class="modal-kicker">JOIN OCULO</div>

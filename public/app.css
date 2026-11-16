@@ -1,11 +1,11 @@
 :root {
-    --ink: #252421;
-    --muted: #959192;
-    --amber: #f0ba7f;
-    --bronze: #9f652c;
-    --teal: #64bcb4;
-    --warm: #faf8f5;
-    --line: #e9e4dd;
+    --ink: #031273;
+    --muted: #52638f;
+    --amber: #4cc9f0;
+    --bronze: #2337c6;
+    --teal: #4169e1;
+    --warm: #f7f9ff;
+    --line: #d7e1ff;
 }
 * {
     box-sizing: border-box;
@@ -37,7 +37,7 @@ a {
     max-width: 1440px;
     margin: auto;
     background: var(--warm);
-    overflow: hidden;
+    overflow: visible;
 }
 .site-header {
     height: 84px;
@@ -47,8 +47,22 @@ a {
     gap: 48px;
     border-bottom: 1px solid var(--line);
     background: rgba(250, 248, 245, 0.88);
-    position: relative;
-    z-index: 5;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+.site-header .brand {
+    flex: 0 0 auto;
+    height: 32px;
+    min-height: 32px;
+    line-height: 32px;
+    letter-spacing: -1px;
+    align-items: center;
+}
+.site-header .brand-mark {
+    transform: translateY(2px);
 }
 .brand {
     display: flex;
@@ -142,7 +156,34 @@ a {
 .menu-button {
     display: none;
     background: none;
-    font-size: 22px;
+    padding: 0;
+    width: 28px;
+    height: 28px;
+    align-items: center;
+    justify-content: center;
+}
+.menu-icon {
+    display: grid;
+    width: 22px;
+    height: 18px;
+    align-content: space-between;
+}
+.menu-icon i {
+    display: block;
+    width: 22px;
+    height: 2px;
+    border-radius: 2px;
+    background: currentColor;
+    transition: transform .2s ease, opacity .2s ease;
+}
+.site-header.menu-open .menu-icon i:first-child {
+    transform: translateY(8px) rotate(45deg);
+}
+.site-header.menu-open .menu-icon i:nth-child(2) {
+    opacity: 0;
+}
+.site-header.menu-open .menu-icon i:last-child {
+    transform: translateY(-8px) rotate(-45deg);
 }
 .hero {
     min-height: 620px;
@@ -410,16 +451,16 @@ blockquote em {
     mix-blend-mode: multiply;
 }
 .peach {
-    background: #efd8c0;
+    background: #dfe7ff;
 }
 .sand {
-    background: #ded8ce;
+    background: #e8eeff;
 }
 .lavender {
-    background: #dcd5d9;
+    background: #dbe3ff;
 }
 .blue {
-    background: #d2dedb;
+    background: #cfe0ff;
 }
 .product-badge {
     position: absolute;
@@ -467,7 +508,7 @@ blockquote em {
 .experience-section {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    background: #ebe5dd;
+    background: #e8eeff;
 }
 .experience-image {
     height: 630px;
@@ -511,7 +552,7 @@ blockquote em {
 .quote-section {
     text-align: center;
     padding: 95px 15%;
-    background: #f6f1eb;
+    background: #eef4ff;
 }
 .quote-mark {
     font: 80px Georgia;
@@ -572,11 +613,13 @@ footer .brand {
 .modal-backdrop {
     position: fixed;
     inset: 0;
-    background: #25242199;
-    z-index: 20;
+    background: #e9e7e299;
+    z-index: 100;
     display: grid;
     place-items: center;
     padding: 20px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 .modal {
     position: relative;
@@ -599,9 +642,9 @@ footer .brand {
     margin: 18px 0;
 }
 .logout-modal-backdrop {
-    z-index: 40;
-    background: #252421b8;
-    backdrop-filter: blur(3px);
+    z-index: 100;
+    background: #eceae3b8;
+    backdrop-filter: blur(10px);
 }
 .logout-modal {
     max-width: 430px;
@@ -824,6 +867,38 @@ footer .brand {
     .header-actions {
         display: none;
     }
+    .site-header.menu-open {
+        height: auto;
+        flex-wrap: wrap;
+        padding-bottom: 18px;
+        align-items: center;
+    }
+    .site-header.menu-open > .brand,
+    .site-header.menu-open > .menu-button {
+        align-self: center;
+    }
+    .site-header.menu-open .main-nav {
+        display: flex;
+        flex-direction: column;
+        order: 3;
+        width: 100%;
+        gap: 0;
+        margin: 18px 0 0;
+        border-top: 1px solid var(--line);
+        padding-top: 8px;
+    }
+    .site-header.menu-open .main-nav a {
+        padding: 10px 0;
+    }
+    .site-header.menu-open .header-actions {
+        display: flex;
+        order: 4;
+        width: 100%;
+        justify-content: space-between;
+        margin-top: 8px;
+        padding-top: 8px;
+        border-top: 1px solid var(--line);
+    }
     .menu-button {
         display: block;
         margin-left: auto;
@@ -908,6 +983,162 @@ footer .brand {
     }
     .modal {
         padding: 35px 24px;
+    }
+}
+
+/* Auth flows */
+.auth-flow-page {
+    padding: 38px 18px;
+}
+.auth-flow-card {
+    max-width: 560px;
+    padding: 34px 40px 30px;
+}
+.auth-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    color: var(--ink);
+    font: 700 21px/1 "DM Sans", sans-serif;
+    text-decoration: none;
+}
+.auth-brand .brand-mark {
+    transform: translateY(1px);
+}
+.auth-flow-heading {
+    margin: 55px 0 27px;
+}
+.auth-flow-heading h1 {
+    margin: 14px 0 11px;
+    font: 500 46px/1.05 "Alegreya SC", serif;
+    letter-spacing: 0;
+    text-wrap: balance;
+}
+.auth-flow-heading h1 em {
+    color: var(--bronze);
+    font-style: normal;
+}
+.auth-flow-heading p {
+    max-width: 430px;
+    margin: 0;
+    color: var(--portal-muted);
+    font: 13px/1.7 "DM Sans", sans-serif;
+}
+.auth-flow-form {
+    display: grid;
+    gap: 16px;
+}
+.auth-flow-form label {
+    display: block;
+    color: #1b2b73;
+    font: 600 11px/1.3 "DM Sans", sans-serif;
+}
+.auth-flow-form input:not([type="checkbox"]) {
+    width: 100%;
+    margin-top: 7px;
+    border: 1px solid #b9c9f2;
+    border-radius: 3px;
+    background: #fff;
+    color: var(--ink);
+    font: 13px "DM Sans", sans-serif;
+    padding: 13px 14px;
+    outline-color: var(--teal);
+}
+.password-field {
+    position: relative;
+    display: block;
+}
+.password-field input {
+    padding-right: 64px !important;
+}
+.password-toggle {
+    position: absolute;
+    top: 7px;
+    right: 3px;
+    height: calc(100% - 7px);
+    border: 0;
+    background: transparent;
+    color: var(--bronze);
+    cursor: pointer;
+    font: 600 10px "DM Sans", sans-serif;
+    padding: 0 10px;
+}
+.password-strength {
+    margin-top: -7px;
+    color: var(--portal-muted);
+    font: 10px/1.5 "DM Sans", sans-serif;
+}
+.password-strength ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 15px;
+    margin: 6px 0 0;
+    padding: 0;
+    list-style: none;
+}
+.password-strength li::before {
+    margin-right: 5px;
+    color: #8b9bc4;
+    content: "○";
+}
+.password-strength li.is-valid {
+    color: #2446a8;
+}
+.password-strength li.is-valid::before {
+    color: var(--teal);
+    content: "✓";
+}
+.terms-field {
+    display: flex !important;
+    align-items: flex-start;
+    gap: 9px;
+    color: var(--portal-muted) !important;
+    font-weight: 400 !important;
+    line-height: 1.5 !important;
+}
+.terms-field input {
+    flex: 0 0 auto;
+    margin-top: 2px;
+    accent-color: var(--teal);
+}
+.terms-field a,
+.auth-flow-footer a {
+    color: var(--bronze);
+    text-decoration: underline;
+}
+.auth-submit {
+    width: 100%;
+    margin-top: 4px;
+}
+.auth-form-note {
+    margin: -4px 0 0;
+    color: #2446a8;
+    font: 11px/1.5 "DM Sans", sans-serif;
+}
+.auth-flow-footer {
+    margin: 25px 0 0;
+    color: var(--portal-muted);
+    font: 11px "DM Sans", sans-serif;
+    text-align: center;
+}
+.auth-flow-card .auth-error {
+    display: block;
+    margin: 6px 0 0;
+    color: #2446a8;
+    font: 11px/1.4 "DM Sans", sans-serif;
+}
+@media (max-width: 560px) {
+    .auth-flow-page {
+        padding: 18px;
+    }
+    .auth-flow-card {
+        padding: 28px 22px 25px;
+    }
+    .auth-flow-heading {
+        margin-top: 42px;
+    }
+    .auth-flow-heading h1 {
+        font-size: 39px;
     }
 }
 @media (max-width: 430px) {
@@ -1359,12 +1590,52 @@ h2,
     }
 }
 
+@media (max-width: 800px) {
+    .site-header {
+        position: sticky;
+        display: block;
+        height: 70px;
+        padding: 0 5%;
+    }
+    .site-header .brand {
+        position: absolute;
+        top: 19px;
+        left: 5%;
+        margin: 0;
+    }
+    .site-header .menu-button {
+        position: absolute;
+        top: 21px;
+        right: 5%;
+        margin: 0;
+    }
+    .site-header.menu-open {
+        display: block;
+        height: auto;
+        padding: 0 5% 18px;
+    }
+    .site-header.menu-open .main-nav {
+        display: flex;
+        width: auto;
+        margin: 0;
+        padding: 82px 0 8px;
+        border-top: 0;
+    }
+    .site-header.menu-open .header-actions {
+        display: flex;
+        width: auto;
+        margin: 8px 0 0;
+        padding: 8px 0 0;
+    }
+}
+
 /* Patient portal navigation and dedicated pages */
 .patient-portal {
     min-height: 100vh;
-    background:
-        radial-gradient(circle at 82% 0%, #e8f4f1 0, transparent 26%),
-        var(--warm);
+    --portal-radius: 6px;
+    --portal-inner-radius: 3px;
+    --portal-muted: #6f6862;
+    background: var(--warm);
 }
 .patient-sidebar {
     position: fixed;
@@ -1400,7 +1671,7 @@ h2,
     margin: 0 4px 28px;
     padding: 14px 10px;
     border: 1px solid var(--line);
-    border-radius: 5px;
+    border-radius: var(--portal-inner-radius);
     background: #fff;
 }
 .patient-avatar {
@@ -1484,7 +1755,8 @@ h2,
     min-height: 100vh;
     margin-left: 252px;
     padding: 0 7% 75px;
-    font-family: "Lobster", cursive;
+    font-family: "Alegreya SC", serif;
+    color: var(--ink);
 }
 .patient-content input,
 .patient-content select,
@@ -1506,7 +1778,33 @@ h2,
 .patient-content .prescription-record p,
 .patient-content .history-record p,
 .patient-content .auth-error {
-    font-family: "DM Sans", sans-serif;
+    font-family: "Alegreya SC", serif;
+}
+.patient-content p,
+.patient-content small,
+.patient-content .patient-page-head p,
+.patient-content .overview-card > span:not(.overview-card-icon),
+.patient-content .overview-link-list small,
+.patient-content .appointment-details p,
+.patient-content .prescription-record p,
+.patient-content .history-record p {
+    color: var(--portal-muted);
+}
+.patient-content h1,
+.patient-content h2,
+.patient-content h3 {
+    text-wrap: balance;
+}
+.patient-content h1,
+.patient-content h2,
+.patient-content h3,
+.patient-content strong,
+.patient-content .overview-card strong,
+.patient-content .record-status,
+.patient-content .appointment-date,
+.patient-content .history-date,
+.patient-content .prescription-record dd {
+    font-variant-numeric: tabular-nums;
 }
 .patient-content > * {
     max-width: 1120px;
@@ -1524,7 +1822,7 @@ h2,
     max-width: 720px;
     margin: 15px 0 12px;
     font: 400 52px/1.05 "Playfair Display", serif;
-    letter-spacing: -1.5px;
+    letter-spacing: 0;
 }
 .patient-page-head h1 em {
     color: var(--bronze);
@@ -1548,7 +1846,7 @@ h2,
     margin-bottom: 18px;
     padding: 28px 32px;
     border: 1px solid #d5e8e4;
-    border-radius: 5px;
+    border-radius: var(--portal-radius);
     background: #edf8f5;
 }
 .overview-next h2 {
@@ -1580,14 +1878,10 @@ h2,
     flex-direction: column;
     min-height: 160px;
     border: 1px solid var(--line);
-    border-radius: 5px;
+    border-radius: var(--portal-radius);
     background: #fff;
     padding: 23px;
     transition: .2s transform, .2s box-shadow;
-}
-.overview-card:hover {
-    box-shadow: 0 12px 28px #5e442314;
-    transform: translateY(-2px);
 }
 .overview-card-icon {
     position: absolute;
@@ -1595,23 +1889,25 @@ h2,
     right: 22px;
     color: var(--bronze);
     font-size: 19px;
-}
-.overview-card .eyebrow {
-    margin-bottom: 18px;
+    line-height: 1;
 }
 .overview-card strong {
-    font: 400 34px/1 "Playfair Display", serif;
+    font: 500 34px/1 "Alegreya SC", serif;
 }
-.overview-card small {
-    color: var(--muted);
+.overview-card > span:not(.overview-card-icon) {
     font-size: 11px;
     margin-top: 7px;
 }
-.card-arrow {
-    position: absolute;
-    right: 22px;
-    bottom: 20px;
+.overview-card > b {
+    margin-top: auto;
+    padding-top: 18px;
     color: var(--bronze);
+    font-size: 10px;
+    font-weight: 700;
+    text-align: right;
+}
+.overview-card > b span {
+    margin-left: 7px;
 }
 .overview-links {
     display: grid;
@@ -1669,11 +1965,35 @@ h2,
 .records-panel,
 .portal-note {
     border: 1px solid var(--line);
-    border-radius: 5px;
+    border-radius: var(--portal-radius);
     background: #fff;
 }
 .booking-panel {
     padding: 31px;
+}
+.booking-panel [aria-busy="true"] {
+    cursor: wait;
+    opacity: .7;
+}
+.booking-panel button[aria-busy="true"]::after {
+    width: 12px;
+    height: 12px;
+    margin-left: 8px;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    content: "";
+    animation: portal-spin .7s linear infinite;
+}
+.portal-feedback {
+    margin: -20px 0 22px;
+    border-left: 3px solid var(--teal);
+    border-radius: var(--portal-inner-radius);
+    background: #edf8f5;
+    color: #23655e !important;
+    padding: 12px 15px;
+    font-size: 12px;
+    animation: portal-feedback .35s ease both;
 }
 .panel-kicker {
     display: flex;
@@ -1713,13 +2033,7 @@ h2,
 .portal-note {
     align-self: stretch;
     padding: 34px;
-    background: #f5eee6;
-}
-.note-mark {
-    display: block;
-    margin-bottom: 35px;
-    color: var(--bronze);
-    font-size: 27px;
+    background: #eef4ff;
 }
 .portal-note h2 {
     margin: 15px 0 12px;
@@ -1732,23 +2046,36 @@ h2,
 }
 .eyewear-page-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 16px;
 }
 .eyewear-choice {
     display: flex;
     flex-direction: column;
-    min-height: 310px;
+    min-width: 250px;
+    min-height: 200px;
     padding: 28px;
-    transition: .2s transform, .2s box-shadow;
-}
-.eyewear-choice:hover {
-    box-shadow: 0 12px 28px #5e442314;
-    transform: translateY(-2px);
 }
 .eyewear-choice-featured {
+    grid-column: span 2;
+    display: grid;
+    grid-template-columns: minmax(220px, .9fr) 1fr;
+    gap: 25px;
     background: #edf8f5;
     border-color: #d5e8e4;
+}
+.eyewear-choice-featured img {
+    width: 100%;
+    height: 100%;
+    min-height: 300px;
+    border-radius: var(--portal-inner-radius);
+    object-fit: cover;
+}
+.eyewear-choice-featured > div {
+    align-self: end;
+}
+.eyewear-choice-featured > b {
+    grid-column: 2;
 }
 .eyewear-symbol {
     display: grid;
@@ -1757,7 +2084,7 @@ h2,
     margin-bottom: auto;
     place-items: center;
     border: 1px solid #d9b995;
-    border-radius: 50%;
+    border-radius: var(--portal-inner-radius);
     color: var(--bronze);
     font-size: 21px;
 }
@@ -1955,6 +2282,19 @@ h2,
     padding: 68px 28px;
     text-align: center;
 }
+.nav-icon,
+.overview-card-icon,
+.eyewear-symbol {
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+}
+@keyframes portal-spin {
+    to { transform: rotate(360deg); }
+}
+@keyframes portal-feedback {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 .records-empty > span {
     color: var(--bronze);
     font-size: 27px;
@@ -2085,12 +2425,606 @@ h2,
         grid-row: span 2;
     }
 }
+
+/* Royal blue visual system */
+body {
+    background: var(--warm);
+}
+.site-header {
+    background: rgba(247, 249, 255, .92);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    backdrop-filter: blur(12px);
+}
+.main-nav a,
+.hero-text,
+.experience-copy p {
+    color: #43527a;
+}
+.text-button {
+    color: #1b2b73;
+}
+.button-teal {
+    background: #4169e1;
+    color: #fff;
+}
+.button-dark {
+    background: #031273;
+    color: #fff;
+}
+.button-outline {
+    border-color: #9aabe4;
+}
+.button-quiet {
+    background: #e8eeff;
+    color: #20357e;
+}
+.hero-orb {
+    background: #4cc9f0;
+}
+.play-icon {
+    border-color: #9aabe4;
+}
+.avatar-stack span,
+.avatar-stack b {
+    border-color: var(--warm);
+}
+.avatar-stack span {
+    background: #2337c6;
+}
+.avatar-stack span:nth-child(2) {
+    background: #4169e1;
+}
+.avatar-stack span:nth-child(3) {
+    background: #4cc9f0;
+    color: #031273;
+}
+.trusted-row {
+    color: #6d7da8;
+}
+.trusted-row b {
+    color: #7e8db7;
+}
+.underlined-link {
+    border-color: #9aabe4;
+}
+.peach,
+.sand,
+.lavender,
+.blue {
+    background: #e8eeff;
+}
+.product-badge {
+    background: #031273;
+}
+.heart {
+    color: #52638f;
+}
+.heart.saved {
+    color: #2337c6;
+}
+.experience-section {
+    background: #e8eeff;
+}
+.service-list > div {
+    border-color: #cbd7fb;
+}
+.quote-section {
+    background: #eef4ff;
+}
+.author-avatar {
+    background: #2337c6;
+}
+.modal-backdrop {
+    background: #858ec999;
+}
+.profile-card,
+.auth-page-card,
+.dashboard-card,
+.stat-card {
+    border-color: var(--line);
+}
+.success-message,
+.status-badge {
+    background: #e8eeff;
+    color: #20357e !important;
+}
+.auth-error {
+    color: #2446a8;
+}
+.auth-page,
+.dashboard-page {
+    background: var(--warm);
+}
+.patient-sidebar {
+    background: rgba(247, 249, 255, .97);
+}
+.patient-nav-link:hover,
+.patient-nav-link.active {
+    background: #e8eeff;
+    color: #031273;
+}
+.patient-profile-chip {
+    border-color: var(--line);
+}
+.patient-avatar {
+    background: #4cc9f0;
+    color: #031273;
+}
+.overview-next {
+    border-color: #bdd2ff;
+    background: #e8f1ff;
+}
+.portal-note {
+    background: #eef4ff;
+}
+.portal-feedback {
+    border-color: #4169e1;
+    background: #e8eeff;
+    color: #20357e !important;
+}
+.eyewear-choice-featured {
+    border-color: #bdd2ff;
+    background: #e8f1ff;
+}
+.record-status {
+    background: #e8eeff;
+    color: #20357e;
+}
+.status-cancelled,
+.status-rejected {
+    background: #e7ecff;
+    color: #2446a8;
+}
+
+/* Admin workspace */
+.admin-portal {
+    min-height: 100vh;
+    background: var(--warm);
+}
+.admin-sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    width: 252px;
+    padding: 28px 18px 22px;
+    border-right: 1px solid var(--line);
+    background: rgba(247, 249, 255, .97);
+}
+.admin-sidebar-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px 28px;
+}
+.admin-sidebar-top .brand {
+    font-size: 21px;
+}
+.admin-profile-chip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 4px 28px;
+    padding: 14px 10px;
+    border: 1px solid var(--line);
+    border-radius: var(--portal-inner-radius);
+    background: #fff;
+}
+.admin-profile-chip strong,
+.admin-profile-chip small {
+    display: block;
+}
+.admin-profile-chip strong {
+    max-width: 145px;
+    overflow: hidden;
+    font-size: 11px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.admin-profile-chip small {
+    margin-top: 3px;
+    color: var(--portal-muted);
+    font-size: 9px;
+}
+.admin-sidebar-footer {
+    margin-top: auto;
+    padding-top: 15px;
+    border-top: 1px solid var(--line);
+}
+.admin-sidebar-backdrop {
+    display: none;
+}
+.admin-content {
+    min-height: 100vh;
+    margin-left: 252px;
+    padding: 0 7% 75px;
+    color: var(--ink);
+    font-family: "Alegreya SC", serif;
+}
+.admin-content > * {
+    max-width: 1120px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.admin-content p,
+.admin-content small,
+.admin-content label,
+.admin-content input,
+.admin-content select,
+.admin-content button,
+.admin-content .eyebrow,
+.admin-content .record-status,
+.admin-content .portal-feedback {
+    font-family: "Alegreya SC", serif;
+}
+.admin-page-head {
+    padding: 76px 0 35px;
+}
+.admin-page-head h1 {
+    margin: 15px 0 12px;
+    font: 500 52px/1.05 "Alegreya SC", serif;
+    letter-spacing: 0;
+    text-wrap: balance;
+}
+.admin-page-head h1 em {
+    color: var(--bronze);
+    font-style: normal;
+}
+.admin-page-head p,
+.admin-section-head p,
+.admin-appointment-main p,
+.admin-patient p,
+.admin-prescription p {
+    margin: 0;
+    color: var(--portal-muted);
+    font-size: 12px;
+    line-height: 1.65;
+}
+.admin-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 18px;
+}
+.admin-stat-card,
+.admin-panel {
+    border: 1px solid var(--line);
+    border-radius: var(--portal-radius);
+    background: #fff;
+}
+.admin-stat-card {
+    display: flex;
+    flex-direction: column;
+    min-height: 144px;
+    padding: 22px;
+}
+.admin-stat-card strong {
+    margin-top: 17px;
+    font: 500 34px/1 "Alegreya SC", serif;
+    font-variant-numeric: tabular-nums;
+}
+.admin-stat-card > span:last-child {
+    margin-top: auto;
+    color: var(--bronze);
+    font-size: 10px;
+}
+.admin-stat-card > span:last-child b {
+    margin-left: 7px;
+}
+.admin-panel {
+    margin-top: 18px;
+    padding: 28px;
+    scroll-margin-top: 25px;
+}
+.admin-section-head {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+.admin-section-head h2 {
+    margin: 9px 0 7px;
+    font: 500 27px/1.1 "Alegreya SC", serif;
+    text-wrap: balance;
+}
+.admin-availability-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    align-items: end;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--line);
+}
+.admin-availability-form label,
+.admin-update-form label,
+.prescription-form label {
+    display: block;
+    color: #1b2b73;
+    font-size: 10px;
+    font-weight: 700;
+}
+.admin-availability-form input,
+.admin-update-form input,
+.admin-update-form select,
+.prescription-form input,
+.prescription-form select {
+    width: 100%;
+    margin-top: 6px;
+    border: 1px solid #b9c9f2;
+    border-radius: var(--portal-inner-radius);
+    background: #fff;
+    color: var(--ink);
+    font: inherit;
+    padding: 10px 11px;
+    outline-color: var(--teal);
+}
+.admin-availability-form .button,
+.prescription-form .button,
+.admin-update-form .button {
+    white-space: nowrap;
+}
+.admin-record-list {
+    display: grid;
+    gap: 0;
+}
+.admin-record,
+.admin-appointment,
+.admin-patient,
+.admin-prescription {
+    display: grid;
+    align-items: center;
+    gap: 17px;
+    padding: 18px 0;
+    border-top: 1px solid var(--line);
+}
+.admin-record:first-child,
+.admin-appointment:first-child,
+.admin-patient:first-child,
+.admin-prescription:first-child {
+    border-top: 0;
+}
+.admin-record {
+    grid-template-columns: 52px 1fr auto;
+}
+.admin-record-date {
+    display: grid;
+    width: 45px;
+    height: 45px;
+    place-items: center;
+    border-radius: var(--portal-inner-radius);
+    background: #e8f1ff;
+    font-variant-numeric: tabular-nums;
+}
+.admin-record-date strong,
+.admin-record-date span {
+    display: block;
+    line-height: 1;
+    text-align: center;
+}
+.admin-record-date strong {
+    font-size: 19px;
+}
+.admin-record-date span {
+    color: var(--bronze);
+    font-size: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+.admin-record small {
+    display: block;
+    margin-top: 4px;
+    color: var(--portal-muted);
+    font-size: 10px;
+}
+.admin-appointment {
+    grid-template-columns: 52px minmax(150px, 1fr) auto minmax(390px, 1.5fr);
+}
+.admin-appointment-main h3,
+.admin-patient h3,
+.admin-prescription h3 {
+    margin: 6px 0 4px;
+    font: 500 19px/1.1 "Alegreya SC", serif;
+}
+.admin-update-form {
+    display: grid;
+    grid-template-columns: 120px 170px minmax(100px, 1fr) auto;
+    gap: 7px;
+    align-items: center;
+}
+.admin-update-form .button {
+    padding: 10px 12px;
+    font-size: 10px;
+}
+.admin-patient {
+    grid-template-columns: 35px 1fr auto;
+}
+.admin-patient .patient-avatar {
+    width: 32px;
+    height: 32px;
+}
+.admin-patient details summary {
+    cursor: pointer;
+    color: var(--bronze);
+    font-size: 10px;
+    font-weight: 700;
+}
+.prescription-form {
+    margin-top: 17px;
+    padding: 17px;
+    border: 1px solid var(--line);
+    border-radius: var(--portal-inner-radius);
+    background: #f3f7ff;
+}
+.prescription-form-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+.prescription-form .button {
+    margin-top: 14px;
+}
+.admin-prescription {
+    grid-template-columns: 48px 1fr;
+}
+.prescription-eye {
+    display: grid;
+    width: 39px;
+    height: 39px;
+    place-items: center;
+    border: 1px solid #9db5f1;
+    border-radius: var(--portal-inner-radius);
+    color: var(--bronze);
+    font-size: 10px;
+    font-weight: 700;
+}
+.admin-empty {
+    padding: 35px 0 10px;
+    color: var(--portal-muted);
+    font-size: 12px;
+    text-align: center;
+}
+.admin-validation {
+    display: grid;
+    gap: 3px;
+    margin: -10px 0 18px;
+    border-left: 3px solid #4169e1;
+    border-radius: var(--portal-inner-radius);
+    background: #e8eeff;
+    padding: 12px 15px;
+    color: #20357e;
+    font-size: 11px;
+    animation: portal-feedback .35s ease both;
+}
+.admin-validation span {
+    color: #52638f;
+}
+.admin-content [aria-busy="true"] {
+    cursor: wait;
+    opacity: .7;
+}
+.admin-content button[aria-busy="true"]::after {
+    width: 11px;
+    height: 11px;
+    margin-left: 7px;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    content: "";
+    animation: portal-spin .7s linear infinite;
+}
+.admin-content .pagination {
+    display: flex;
+    gap: 6px;
+    margin: 20px 0 0;
+    padding: 0;
+    list-style: none;
+    font-family: "Alegreya SC", serif;
+}
+.admin-content .pagination a,
+.admin-content .pagination span {
+    display: block;
+    border: 1px solid var(--line);
+    border-radius: var(--portal-inner-radius);
+    padding: 6px 9px;
+    color: var(--bronze);
+    font-size: 10px;
+}
+@media (max-width: 1100px) {
+    .admin-appointment {
+        grid-template-columns: 52px 1fr auto;
+    }
+    .admin-update-form {
+        grid-column: 2 / -1;
+        grid-template-columns: repeat(3, 1fr) auto;
+    }
+}
+@media (max-width: 900px) {
+    .admin-content {
+        margin-left: 0;
+        padding: 0 5% 55px;
+    }
+    .admin-sidebar {
+        transform: translateX(-100%);
+        transition: transform .25s ease;
+        box-shadow: 12px 0 35px #03127318;
+    }
+    .admin-sidebar.is-open {
+        transform: translateX(0);
+    }
+    .admin-sidebar-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 20;
+        border: 0;
+        background: #03127366;
+    }
+    body.admin-sidebar-open .admin-sidebar-backdrop {
+        display: block;
+    }
+    .admin-page-head {
+        padding-top: 52px;
+    }
+    .admin-page-head h1 {
+        font-size: 42px;
+    }
+    .admin-stat-grid {
+        grid-template-columns: 1fr;
+    }
+    .admin-availability-form {
+        grid-template-columns: 1fr 1fr;
+    }
+    .admin-availability-form .button {
+        grid-column: 1 / -1;
+        justify-self: start;
+    }
+}
+@media (max-width: 620px) {
+    .admin-panel {
+        padding: 21px;
+    }
+    .admin-availability-form {
+        grid-template-columns: 1fr;
+    }
+    .admin-availability-form .button {
+        grid-column: auto;
+    }
+    .admin-appointment {
+        grid-template-columns: 48px 1fr;
+    }
+    .admin-appointment .record-status {
+        grid-column: 2;
+        justify-self: start;
+    }
+    .admin-update-form {
+        grid-column: 1 / -1;
+        grid-template-columns: 1fr 1fr;
+    }
+    .admin-update-form input[name="reason"] {
+        grid-column: 1 / -1;
+    }
+    .admin-update-form .button {
+        justify-self: start;
+    }
+    .admin-patient {
+        grid-template-columns: 35px 1fr;
+    }
+    .admin-patient details {
+        grid-column: 2;
+    }
+    .prescription-form-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
 .patient-content h1,
 .patient-content h2,
 .patient-content h3,
 .patient-content .overview-card strong,
 .logout-modal h2 {
-    font-family: "Lobster", cursive;
-    font-weight: 400;
+    font-family: "Alegreya SC", serif;
+    font-weight: 500;
     letter-spacing: 0;
 }

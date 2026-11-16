@@ -7,7 +7,7 @@
     <title>@yield('title', 'Patient portal') · MOA</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Lobster&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Alegreya+SC:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/app.css">
 </head>
 <body>
@@ -50,7 +50,6 @@
 <div class="modal-backdrop logout-modal-backdrop" data-logout-modal hidden>
     <section class="modal logout-modal" role="dialog" aria-modal="true" aria-labelledby="logout-title" aria-describedby="logout-description">
         <button class="modal-close" type="button" data-close-logout aria-label="Close logout dialog">×</button>
-        <div class="eyebrow">MOA PATIENT PORTAL</div>
         <h2 id="logout-title">Leave the portal?</h2>
         <p id="logout-description">You will need to sign in again to manage your appointments and care history.</p>
         <div class="logout-actions">
