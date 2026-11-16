@@ -73,12 +73,18 @@ class PatientController extends Controller
             return redirect()->route('dashboard');
         }
 
-        return view('profile.create', ['user' => $request->user()]);
+        return view('profile.create', ['user' => $request->user(), 'editing' => false]);
+    }
+
+    public function profile(Request $request)
+    {
+        return view('profile.create', ['user' => $request->user(), 'editing' => true]);
     }
 
     public function updateProfile(Request $request)
     {
         $user = $request->user();
+        $wasCompleted = (bool) $user->profile_completed_at;
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:120'],
             'phone' => ['nullable', 'string', 'max:30'],
@@ -89,7 +95,9 @@ class PatientController extends Controller
         }
         $user->fill($validated)->forceFill(['profile_completed_at' => now()])->save();
 
-        return redirect()->route('dashboard')->with('success', 'Profile saved.');
+        return redirect()
+            ->route($wasCompleted ? 'patient.profile' : 'dashboard')
+            ->with('success', 'Profile saved.');
     }
 
     public function cancelAppointment(Request $request, int $appointment)

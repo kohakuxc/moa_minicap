@@ -46,6 +46,7 @@ Route::post('/email/verification-notification', [AuthController::class, 'sendVer
 
 Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::get('/profile/create', [PatientController::class, 'createProfile'])->name('profile.create');
+    Route::get('/profile', [PatientController::class, 'profile'])->name('patient.profile');
     Route::get('/dashboard', [PatientController::class, 'dashboard'])->name('dashboard');
     Route::get('/appointments/create', [PatientController::class, 'createAppointment'])->name('patient.appointments.create');
     Route::get('/eyewear', [PatientController::class, 'eyewear'])->name('patient.eyewear');

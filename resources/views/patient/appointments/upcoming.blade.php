@@ -3,6 +3,36 @@
 @section('title', 'Upcoming appointments')
 
 @section('content')
-<div class="patient-page-head compact-head"><div><h1>Upcoming <em>appointments.</em></h1><p>Keep track of what is next and make changes when you need to.</p></div><a class="button button-teal" href="{{ route('patient.appointments.create', [], false) }}">Book another <span>→</span></a></div>
-<section class="records-panel">@forelse($appointments as $appointment)<article class="appointment-record"><div class="appointment-date"><strong>{{ $appointment->starts_at->format('d') }}</strong><span>{{ $appointment->starts_at->format('M') }}</span></div><div class="appointment-details"><div class="eyebrow">{{ $appointment->starts_at->format('l · g:i A') }}</div><h2>{{ $appointment->service }}</h2><p>{{ $appointment->specialist ? 'With '.$appointment->specialist : 'MOA care team' }}@if($appointment->notes) · {{ $appointment->notes }}@endif</p></div><span class="record-status status-{{ $appointment->status }}">{{ ucfirst(str_replace('_', ' ', $appointment->status)) }}</span>@if(!in_array($appointment->status, ['cancelled','rejected']))<details class="cancel-details"><summary>Cancel</summary><form method="POST" action="{{ route('appointments.cancel', $appointment, false) }}">@csrf @method('DELETE')<input name="reason" required placeholder="Reason" aria-label="Cancellation reason"><button class="text-button" type="submit">Confirm cancellation</button></form></details>@endif</article>@empty<div class="records-empty"><span>◷</span><h2>Your calendar is clear.</h2><p>Book an appointment when you are ready to see the care team.</p><a class="button button-teal" href="{{ route('patient.appointments.create', [], false) }}">Book an appointment <span>→</span></a></div>@endforelse</section>
+    <div class="patient-page-head compact-head">
+        <div>
+            <h1>Scheduled <em>appointments.</em></h1>
+            <p>Keep track of what is next and make changes when you need to.</p>
+        </div><a class="button button-teal" href="{{ route('patient.appointments.create', [], false) }}">Book another
+            <span>→</span></a>
+    </div>
+    <section class="records-panel">@forelse($appointments as $appointment)
+        <article class="appointment-record">
+            <div class="appointment-date">
+                <strong>{{ $appointment->starts_at->format('d') }}</strong><span>{{ $appointment->starts_at->format('M') }}</span>
+            </div>
+            <div class="appointment-details">
+                <div class="eyebrow">{{ $appointment->starts_at->format('l · g:i A') }}</div>
+                <h2>{{ $appointment->service }}</h2>
+                <p>{{ $appointment->specialist ? 'With ' . $appointment->specialist : 'MOA care team' }}@if($appointment->notes)
+                · {{ $appointment->notes }}@endif</p>
+            </div><span
+                class="record-status status-{{ $appointment->status }}">{{ ucfirst(str_replace('_', ' ', $appointment->status)) }}</span>@if(!in_array($appointment->status, ['cancelled', 'rejected']))
+                    <details class="cancel-details">
+                        <summary>Cancel</summary>
+                        <form method="POST" action="{{ route('appointments.cancel', $appointment, false) }}">@csrf
+                            @method('DELETE')<input name="reason" required placeholder="Reason"
+                                aria-label="Cancellation reason"><button class="text-button" type="submit">Confirm
+                                cancellation</button></form>
+                </details>@endif
+    </article>@empty<div class="records-empty"><span>◷</span>
+            <h2>Your calendar is clear.</h2>
+            <p>Book an appointment when you are ready to see the care team.</p><a class="button button-teal"
+                href="{{ route('patient.appointments.create', [], false) }}">Book an appointment <span>→</span></a>
+        </div>@endforelse
+    </section>
 @endsection

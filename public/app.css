@@ -214,7 +214,7 @@ a {
 .hero h1,
 h2 {
     font:
-        500 68px/1.02 "Playfair Display",
+        500 68px/1.02 "Alegreya SC",
         serif;
     letter-spacing: -3px;
     margin: 26px 0 22px;
@@ -561,7 +561,7 @@ blockquote em {
 }
 .quote-section blockquote {
     font:
-        500 40px/1.25 "Playfair Display",
+        500 40px/1.25 "Alegreya SC",
         serif;
     max-width: 680px;
     margin: 0 auto 30px;
@@ -653,7 +653,7 @@ footer .brand {
     padding: 38px;
 }
 .logout-modal h2 {
-    font: 400 34px/1.1 "Playfair Display", serif;
+    font: 400 34px/1.1 "Alegreya SC", serif;
     margin: 16px 0 10px;
 }
 .logout-modal p {
@@ -827,7 +827,7 @@ footer .brand {
 }
 .booking-success h3 {
     font:
-        500 28px "Playfair Display",
+        500 28px "Alegreya SC",
         serif;
 }
 .booking-success p,
@@ -1173,7 +1173,7 @@ footer .brand {
 h2,
 .quote-section blockquote,
 .modal h2 {
-    font-family: "Lobster", cursive;
+    font-family: "Alegreya SC", cursive, serif;
     font-weight: 400;
     letter-spacing: 0;
 }
@@ -1210,8 +1210,9 @@ h2,
 .auth-page-card h1,
 .dashboard-intro h1 {
     font:
-        400 48px "Lobster",
-        cursive;
+        400 48px "Alegreya SC",
+        cursive,
+        serif;
     margin: 18px 0;
 }
 .auth-page-card h1 em,
@@ -1472,7 +1473,7 @@ h2,
     min-width: 25px;
 }
 .dashboard-card h2 {
-    font: 400 25px/1.15 "Playfair Display", serif;
+    font: 400 25px/1.15 "Alegreya SC", serif;
     margin: 5px 0 0;
 }
 .form-row {
@@ -1811,6 +1812,21 @@ h2,
     margin-left: auto;
     margin-right: auto;
 }
+
+.reg-page-head {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 30px;
+    padding: 42px 0 42px;
+}
+.reg-page-head h1 {
+    max-width: 720px;
+    margin: 15px 0 12px;
+    font: 400 52px/1.05 "Alegreya SC", serif;
+    letter-spacing: 0;
+}
+
 .patient-page-head {
     display: flex;
     align-items: end;
@@ -1821,7 +1837,7 @@ h2,
 .patient-page-head h1 {
     max-width: 720px;
     margin: 15px 0 12px;
-    font: 400 52px/1.05 "Playfair Display", serif;
+    font: 400 52px/1.05 "Alegreya SC", serif;
     letter-spacing: 0;
 }
 .patient-page-head h1 em {
@@ -1842,7 +1858,7 @@ h2,
     display: flex;
     align-items: end;
     justify-content: space-between;
-    min-height: 154px;
+    min-height: 110px;
     margin-bottom: 18px;
     padding: 28px 32px;
     border: 1px solid #d5e8e4;
@@ -1851,7 +1867,7 @@ h2,
 }
 .overview-next h2 {
     margin: 12px 0 6px;
-    font: 400 28px/1.1 "Playfair Display", serif;
+    font: 400 28px/1.1 "Alegreya SC", serif;
 }
 .overview-next p {
     margin: 0;
@@ -1920,7 +1936,7 @@ h2,
 .overview-links h2 {
     max-width: 210px;
     margin: 13px 0 0;
-    font: 400 27px/1.15 "Playfair Display", serif;
+    font: 400 27px/1.15 "Alegreya SC", serif;
 }
 .overview-link-list a {
     display: grid;
@@ -2037,7 +2053,7 @@ h2,
 }
 .portal-note h2 {
     margin: 15px 0 12px;
-    font: 400 29px/1.15 "Playfair Display", serif;
+    font: 400 29px/1.15 "Alegreya SC", serif;
 }
 .portal-note p {
     color: #82776e;
@@ -2091,7 +2107,7 @@ h2,
 .eyewear-choice h2,
 .service-page-list h2 {
     margin: 12px 0 9px;
-    font: 400 26px/1.15 "Playfair Display", serif;
+    font: 400 26px/1.15 "Alegreya SC", serif;
 }
 .eyewear-choice p,
 .service-page-list p {
@@ -2170,7 +2186,7 @@ h2,
     text-align: center;
 }
 .appointment-date strong {
-    font: 400 22px "Playfair Display", serif;
+    font: 400 22px "Alegreya SC", serif;
 }
 .appointment-date span {
     color: var(--bronze);
@@ -2183,7 +2199,7 @@ h2,
 .prescription-record h2,
 .history-record h2 {
     margin: 7px 0 5px;
-    font: 400 20px "Playfair Display", serif;
+    font: 400 20px "Alegreya SC", serif;
 }
 .appointment-details p,
 .prescription-record p,
@@ -2276,7 +2292,7 @@ h2,
 }
 .history-date span {
     margin-top: 7px;
-    font: 400 17px "Playfair Display", serif;
+    font: 400 17px "Alegreya SC", serif;
 }
 .records-empty {
     padding: 68px 28px;
@@ -2301,7 +2317,7 @@ h2,
 }
 .records-empty h2 {
     margin: 14px 0 8px;
-    font: 400 26px "Playfair Display", serif;
+    font: 400 26px "Alegreya SC", serif;
 }
 .records-empty p {
     color: var(--muted);
@@ -3027,4 +3043,11 @@ body {
     font-family: "Alegreya SC", serif;
     font-weight: 500;
     letter-spacing: 0;
+}
+
+.required::after{
+    content: "*";
+    color: red;
+    margin-left: 2px;
+    font-weight: bold;
 }

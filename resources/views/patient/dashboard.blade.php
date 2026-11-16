@@ -12,7 +12,7 @@
             appointment <span>→</span></a>
     </div>
     <section class="overview-next">
-        <div><span class="eyebrow">NEXT APPOINTMENT</span>
+        <div>
             <h2>{{ $nextAppointment ? $nextAppointment->starts_at->format('l, M j') : 'Nothing scheduled yet' }}</h2>
             <p>{{ $nextAppointment ? $nextAppointment->service . ' · ' . $nextAppointment->starts_at->format('g:i A') : 'Choose a time when you are ready to see the doctor.' }}
             </p>
@@ -22,7 +22,7 @@
     </section>
     <div class="overview-grid">
         <a class="overview-card" href="{{ route('patient.appointments.upcoming', [], false) }}"><span
-                class="overview-card-icon" aria-hidden="true">◷</span><strong>{{ $upcomingCount }}</strong><span>Upcoming
+                class="overview-card-icon" aria-hidden="true">◷</span><strong>{{ $upcomingCount }}</strong><span>Scheduled
                 appointments</span><b>View <span>→</span></b></a>
         <a class="overview-card" href="{{ route('patient.prescriptions', [], false) }}"><span class="overview-card-icon"
                 aria-hidden="true">▤</span><strong>{{ $prescriptionCount }}</strong><span>Prescriptions on

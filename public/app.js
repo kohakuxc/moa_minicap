@@ -86,7 +86,7 @@ document.querySelectorAll("[data-auth-form]").forEach((form) =>
                             "Unable to complete authentication.",
                     );
                 submit.textContent =
-                    type === "register" ? "Account created ✓" : "Logged in ✓";
+                    type === "register" ? "Account created" : "Logged in";
                 window.location.assign(
                     type === "register"
                         ? "/email/verify"
