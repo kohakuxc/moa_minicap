@@ -21,23 +21,76 @@ class AuthenticationAndAuthorizationTest extends TestCase
             'name' => 'Jane Patient',
             'email' => 'jane@example.com',
             'phone' => '555-0100',
-            'password' => 'password123',
-            'password_confirmation' => 'password123',
+            'password' => 'Password123!',
+            'password_confirmation' => 'Password123!',
+            'terms' => '1',
         ]);
 
         $response->assertCreated();
         $this->assertAuthenticated();
         $user = User::where('email', 'jane@example.com')->firstOrFail();
         $this->assertSame('patient', $user->role);
-        $this->assertTrue(Hash::check('password123', $user->password));
+        $this->assertTrue(Hash::check('Password123!', $user->password));
         Notification::assertSentTo($user, \Illuminate\Auth\Notifications\VerifyEmail::class);
+    }
+
+    public function test_registration_requires_terms_and_a_strong_password(): void
+    {
+        Notification::fake();
+
+        $this->postJson('/auth/register', [
+            'name' => 'Jane Patient',
+            'email' => 'jane-weak@example.com',
+            'phone' => '555-0101',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+        ])->assertUnprocessable()->assertJsonValidationErrors(['password', 'terms']);
+    }
+
+    public function test_registration_rejects_a_duplicate_mobile_number(): void
+    {
+        Notification::fake();
+        User::factory()->create(['phone' => '555-0102']);
+
+        $this->postJson('/auth/register', [
+            'name' => 'Another Patient',
+            'email' => 'another@example.com',
+            'phone' => ' 555-0102 ',
+            'password' => 'Password123!',
+            'password_confirmation' => 'Password123!',
+            'terms' => '1',
+        ])->assertUnprocessable()->assertJsonValidationErrors(['phone']);
+    }
+
+    public function test_completed_patient_login_goes_to_dashboard(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'complete@example.com',
+            'password' => 'Password123!',
+            'profile_completed_at' => now(),
+        ]);
+
+        $this->postJson('/auth/login', [
+            'email' => $user->email,
+            'password' => 'Password123!',
+        ])->assertOk()->assertJsonPath('redirect', '/dashboard');
+    }
+
+    public function test_completed_patient_cannot_reopen_profile_setup(): void
+    {
+        $user = User::factory()->create([
+            'email_verified_at' => now(),
+            'profile_completed_at' => now(),
+        ]);
+
+        $this->actingAs($user)->get('/profile/create')->assertRedirect('/dashboard');
     }
 
     public function test_password_reset_request_is_generic(): void
     {
         $this->postJson('/auth/forgot-password', ['email' => 'missing@example.com'])
             ->assertOk()
-            ->assertJson(['message' => 'If an account exists, reset instructions will be sent.']);
+            ->assertJson(['message' => 'If an account exists with that email, a reset link has been sent.']);
     }
 
     public function test_patient_cannot_access_admin_area(): void

@@ -3,32 +3,59 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Notifications\PasswordChangedNotification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    public function register(Request $request): JsonResponse
+    public function showRegister()
+    {
+        return view('auth.register');
+    }
+
+    public function showForgotPassword()
+    {
+        return view('auth.forgot-password');
+    }
+
+    public function showResetPassword(string $token, Request $request)
+    {
+        return view('auth.reset-password', [
+            'token' => $token,
+            'email' => $request->query('email', old('email')),
+        ]);
+    }
+
+    public function register(Request $request)
     {
         $registrationKey = 'registration|'.$request->ip();
         abort_if(RateLimiter::tooManyAttempts($registrationKey, 10), 429, 'Please try again later.');
         RateLimiter::hit($registrationKey, 60);
+        $request->merge([
+            'name' => Str::squish($request->string('name')->toString()),
+            'email' => Str::lower(trim($request->string('email')->toString())),
+            'phone' => preg_replace('/\s+/', ' ', trim($request->string('phone')->toString())),
+        ]);
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:120'],
             'email' => ['required', 'string', 'email:rfc', 'max:255', 'unique:users,email'],
-            'phone' => ['required', 'string', 'max:30'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'phone' => ['required', 'string', 'max:30', Rule::unique('users', 'phone')->whereNotNull('phone')],
+            'password' => $this->strongPasswordRules(),
+            'terms' => ['accepted'],
         ]);
 
         $user = User::create([
             'name' => $validated['name'],
-            'email' => Str::lower($validated['email']),
+            'email' => $validated['email'],
             'phone' => $validated['phone'],
             'password' => Hash::make($validated['password']),
         ]);
@@ -37,10 +64,14 @@ class AuthController extends Controller
         $request->session()->regenerate();
         $user->sendEmailVerificationNotification();
 
-        return response()->json([
+        $response = [
             'message' => 'Your account has been created.',
             'user' => $user->only(['id', 'name', 'email', 'phone']),
-        ], 201);
+        ];
+
+        return $request->expectsJson()
+            ? response()->json($response, 201)
+            : redirect('/email/verify')->with('success', $response['message']);
     }
 
     public function login(Request $request): JsonResponse
@@ -79,7 +110,9 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'You are now logged in.',
             'user' => $request->user()->only(['id', 'name', 'email', 'phone', 'role']),
-            'redirect' => $request->user()->isAdmin() ? '/admin' : '/profile/create',
+            'redirect' => $request->user()->isStaff()
+                ? '/admin'
+                : ($request->user()->profile_completed_at ? '/dashboard' : '/profile/create'),
         ]);
     }
 
@@ -102,33 +135,38 @@ class AuthController extends Controller
         return response()->json(['message' => 'Verification email sent.']);
     }
 
-    public function forgotPassword(Request $request): JsonResponse
+    public function forgotPassword(Request $request)
     {
         $request->validate(['email' => ['required', 'email:rfc']]);
-        $key = 'password-reset|'.$request->ip();
+        $email = Str::lower(trim($request->string('email')->toString()));
+        $key = 'password-reset|'.$request->ip().'|'.$email;
+        $message = 'If an account exists with that email, a reset link has been sent.';
 
-        if (RateLimiter::tooManyAttempts($key, 5)) {
-            return $request->expectsJson()
-                ? response()->json(['message' => 'If an account exists, reset instructions will be sent.'])
-                : back()->with('status', 'If an account exists, reset instructions will be sent.');
+        if (! RateLimiter::tooManyAttempts($key, 3)) {
+            RateLimiter::hit($key, 900);
+            Password::sendResetLink(['email' => $email]);
         }
 
-        RateLimiter::hit($key, 60);
-        Password::sendResetLink(['email' => Str::lower($request->string('email')->toString())]);
-
-        return response()->json(['message' => 'If an account exists, reset instructions will be sent.']);
+        return $request->expectsJson()
+            ? response()->json(['message' => $message])
+            : back()->with('status', $message);
     }
 
-    public function resetPassword(Request $request): JsonResponse
+    public function resetPassword(Request $request)
     {
+        $request->merge([
+            'email' => Str::lower(trim($request->string('email')->toString())),
+        ]);
         $validated = $request->validate([
             'token' => ['required', 'string'],
             'email' => ['required', 'email:rfc'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password' => $this->strongPasswordRules(),
         ]);
 
         $status = Password::reset($validated, function (User $user, string $password): void {
             $user->forceFill(['password' => Hash::make($password)])->save();
+            DB::table('sessions')->where('user_id', $user->id)->delete();
+            $user->notify(new PasswordChangedNotification());
         });
 
         if ($status !== Password::PASSWORD_RESET) {
@@ -136,7 +174,20 @@ class AuthController extends Controller
         }
 
         return $request->expectsJson()
-            ? response()->json(['message' => 'Password reset successfully.'])
+            ? response()->json(['message' => 'Password reset successfully.', 'redirect' => '/'])
             : redirect('/')->with('success', 'Password reset successfully. Please log in.');
+    }
+
+    private function strongPasswordRules(): array
+    {
+        return [
+            'required',
+            'string',
+            'min:8',
+            'confirmed',
+            'regex:/[A-Z]/',
+            'regex:/[0-9]/',
+            'regex:/[^A-Za-z0-9]/',
+        ];
     }
 }
