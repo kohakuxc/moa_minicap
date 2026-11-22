@@ -611,15 +611,24 @@ footer .brand {
     font-size: 18px;
 }
 .modal-backdrop {
-    position: fixed;
-    inset: 0;
-    background: #e9e7e299;
-    z-index: 100;
+    position: fixed !important;
+    inset: 0 !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: none !important;
+    margin: 0 !important;
+    background: rgba(18, 26, 46, 0.45) !important;
+    z-index: 9999 !important;
     display: grid;
     place-items: center;
     padding: 20px;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(14px) !important;
+    -webkit-backdrop-filter: blur(14px) !important;
+    box-sizing: border-box;
 }
 .modal {
     position: relative;
@@ -1645,9 +1654,22 @@ h2,
     display: flex;
     flex-direction: column;
     width: 252px;
-    padding: 28px 18px 22px;
+    padding: 28px 18px 32px;
     border-right: 1px solid var(--line);
     background: rgba(250, 248, 245, .96);
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+.patient-sidebar::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+}
+.patient-sidebar > * {
+    flex-shrink: 0;
 }
 .patient-sidebar-top,
 .patient-profile-chip,
@@ -1756,7 +1778,7 @@ h2,
     min-height: 100vh;
     margin-left: 252px;
     padding: 0 7% 75px;
-    font-family: "Alegreya SC", serif;
+    font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     color: var(--ink);
 }
 .patient-content input,
@@ -1770,6 +1792,12 @@ h2,
 .patient-content p,
 .patient-content dt,
 .patient-content dd,
+.patient-content label,
+.patient-content span,
+.patient-content a,
+.patient-content table,
+.patient-content th,
+.patient-content td,
 .patient-content .record-status,
 .patient-content .patient-page-head p,
 .patient-content .overview-next p,
@@ -1779,7 +1807,18 @@ h2,
 .patient-content .prescription-record p,
 .patient-content .history-record p,
 .patient-content .auth-error {
+    font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+.patient-content h1,
+.patient-content h2,
+.patient-content h3,
+.patient-page-head h1,
+.patient-page-head h2,
+.portal-panel h2,
+.records-panel h2,
+.records-empty h2 {
     font-family: "Alegreya SC", serif;
+    font-weight: 500;
 }
 .patient-content p,
 .patient-content small,
@@ -2532,9 +2571,6 @@ body {
 .author-avatar {
     background: #2337c6;
 }
-.modal-backdrop {
-    background: #858ec999;
-}
 .profile-card,
 .auth-page-card,
 .dashboard-card,
@@ -2606,9 +2642,22 @@ body {
     display: flex;
     flex-direction: column;
     width: 252px;
-    padding: 28px 18px 22px;
+    padding: 28px 18px 32px;
     border-right: 1px solid var(--line);
     background: rgba(247, 249, 255, .97);
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+.admin-sidebar::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+}
+.admin-sidebar > * {
+    flex-shrink: 0;
 }
 .admin-sidebar-top {
     display: flex;
@@ -2658,7 +2707,7 @@ body {
     margin-left: 252px;
     padding: 0 7% 75px;
     color: var(--ink);
-    font-family: "Alegreya SC", serif;
+    font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 .admin-content > * {
     max-width: 1120px;
@@ -2670,10 +2719,24 @@ body {
 .admin-content label,
 .admin-content input,
 .admin-content select,
+.admin-content textarea,
 .admin-content button,
 .admin-content .eyebrow,
 .admin-content .record-status,
-.admin-content .portal-feedback {
+.admin-content .portal-feedback,
+.admin-content span,
+.admin-content a,
+.admin-content table,
+.admin-content th,
+.admin-content td {
+    font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+.admin-page-head h1,
+.admin-section-head h2,
+.admin-panel h2,
+.admin-stat-card strong,
+.kpi-card-custom strong,
+.kpi-value {
     font-family: "Alegreya SC", serif;
 }
 .admin-page-head {
@@ -2938,7 +3001,7 @@ body {
     margin: 20px 0 0;
     padding: 0;
     list-style: none;
-    font-family: "Alegreya SC", serif;
+    font-family: "DM Sans", sans-serif;
 }
 .admin-content .pagination a,
 .admin-content .pagination span {
@@ -3051,3 +3114,338 @@ body {
     margin-left: 2px;
     font-weight: bold;
 }
+
+
+/* --- MOA Optical Clinic: Expansion Styles (Palette: #F0BA7F, #9F652C, #64BCB4, #959192, #C0A37F) --- */
+:root {
+    --moa-gold: #F0BA7F;
+    --moa-bronze: #9F652C;
+    --moa-teal: #64BCB4;
+    --moa-slate: #959192;
+    --moa-sand: #C0A37F;
+    --moa-dark: #1F2421;
+    --moa-light-bg: #FCFAF7;
+}
+
+.admin-nav-tabs {
+    display: flex;
+    gap: 8px;
+    margin: 20px 0;
+    padding-bottom: 4px;
+    border-bottom: 2px solid #EFE9E1;
+    overflow-x: auto;
+}
+.admin-nav-tab {
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--moa-slate);
+    border-radius: 8px 8px 0 0;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+.admin-nav-tab:hover {
+    color: var(--moa-bronze);
+    background: rgba(240, 186, 127, 0.15);
+}
+.admin-nav-tab.active {
+    color: #fff;
+    background: var(--moa-bronze);
+}
+
+.kpi-grid-5 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.kpi-card-custom {
+    background: #fff;
+    border: 1px solid #E5DFD7;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    position: relative;
+    overflow: hidden;
+}
+.kpi-card-custom::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+}
+.kpi-card-custom.kpi-appointments::before { background: var(--moa-teal); }
+.kpi-card-custom.kpi-noshow::before { background: var(--moa-slate); }
+.kpi-card-custom.kpi-revenue::before { background: var(--moa-bronze); }
+.kpi-card-custom.kpi-lab::before { background: var(--moa-gold); }
+.kpi-card-custom.kpi-inventory::before { background: #E0564C; }
+
+.kpi-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--moa-slate);
+}
+.kpi-value {
+    font: 600 32px/1 "Alegreya SC", serif;
+    color: var(--moa-dark);
+    margin: 14px 0 6px;
+}
+.kpi-sub {
+    font-size: 12px;
+    color: var(--moa-slate);
+    line-height: 1.4;
+}
+
+/* Queue Live Board Styles */
+.queue-board-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 18px;
+    margin-top: 18px;
+}
+.queue-col {
+    background: #F9F7F4;
+    border: 1px solid #E5DFD7;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+}
+.queue-col-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 700;
+    font-size: 13px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #EAE4DC;
+    margin-bottom: 14px;
+}
+.queue-badge-count {
+    background: #E0D9D0;
+    color: #4A4540;
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 11px;
+}
+.queue-card {
+    background: #fff;
+    border: 1px solid #E5DFD7;
+    border-radius: 8px;
+    padding: 14px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.queue-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+.ticket-badge {
+    font: 700 16px/1 "Alegreya SC", serif;
+    background: rgba(240, 186, 127, 0.25);
+    color: var(--moa-bronze);
+    padding: 4px 8px;
+    border-radius: 6px;
+    display: inline-block;
+}
+
+/* Clinical EHR Prescription Grid */
+.ehr-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 13px;
+}
+.ehr-table th {
+    background: #F5EFEB;
+    color: var(--moa-bronze);
+    font-weight: 700;
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #E2D9D0;
+}
+.ehr-table td {
+    padding: 8px 10px;
+    border: 1px solid #E2D9D0;
+    background: #fff;
+}
+.ehr-table input,
+.ehr-table select {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid #D5CBC0;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+/* Digital Signature Token Stamp */
+.digital-stamp {
+    border: 2px dashed var(--moa-teal);
+    background: rgba(100, 188, 180, 0.08);
+    border-radius: 8px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 16px;
+}
+.stamp-seal {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--moa-teal);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+/* Audit Log Table */
+.audit-stream {
+    max-height: 380px;
+    overflow-y: auto;
+    border: 1px solid #E5DFD7;
+    border-radius: 8px;
+    background: #fff;
+}
+.audit-row {
+    padding: 10px 14px;
+    border-bottom: 1px solid #F0EAE3;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+}
+.audit-row:last-child { border-bottom: none; }
+.audit-action-tag {
+    background: rgba(159, 101, 44, 0.1);
+    color: var(--moa-bronze);
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: monospace;
+}
+
+/* ==========================================================================
+   MOA Font Hierarchy & Consistency (Portal, Admin, Auth, Records)
+   Preserves landing page completely untouched.
+   ========================================================================== */
+
+/* Universal Sans-Serif Body & Interface Typography */
+.patient-portal,
+.admin-portal,
+.auth-page,
+.dashboard-page,
+.profile-card,
+.modal-dialog,
+.admin-sidebar,
+.patient-sidebar,
+.portal-panel,
+.admin-panel,
+.queue-col,
+.queue-card,
+.kpi-card-custom,
+.audit-stream,
+.ehr-table,
+.split-page-grid,
+.service-page-list,
+.eyewear-grid,
+.records-panel {
+    font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Ensure all form elements and interface controls inherit the clean DM Sans font */
+.patient-portal input,
+.patient-portal select,
+.patient-portal textarea,
+.patient-portal button,
+.patient-portal label,
+.patient-portal table,
+.patient-portal th,
+.patient-portal td,
+.admin-portal input,
+.admin-portal select,
+.admin-portal textarea,
+.admin-portal button,
+.admin-portal label,
+.admin-portal table,
+.admin-portal th,
+.admin-portal td,
+.auth-page input,
+.auth-page select,
+.auth-page textarea,
+.auth-page button,
+.auth-page label {
+    font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Consistent Serif Headings & Brand Elements across all pages */
+.patient-portal h1,
+.patient-portal h2,
+.patient-portal h3,
+.admin-portal h1,
+.admin-portal h2,
+.admin-portal h3,
+.auth-page h1,
+.auth-page h2,
+.dashboard-page h1,
+.dashboard-page h2,
+.admin-page-head h1,
+.patient-page-head h1,
+.admin-section-head h2,
+.kpi-value,
+.stat-card-value,
+.ticket-badge,
+.auth-brand,
+.brand {
+    font-family: "Alegreya SC", serif;
+}
+
+/* Monospace Security & Hash Tokens */
+code,
+pre,
+.token-chip,
+.digital-stamp code,
+.audit-action-tag,
+.audit-hash,
+.sig-hash {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+/* Modal Fullscreen & Complete Backdrop Blur */
+.admin-content > .modal-backdrop,
+.patient-content > .modal-backdrop,
+.modal-backdrop {
+    position: fixed !important;
+    inset: 0 !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: none !important;
+    margin: 0 !important;
+    z-index: 9999 !important;
+    background: rgba(18, 26, 46, 0.45) !important;
+    backdrop-filter: blur(14px) !important;
+    -webkit-backdrop-filter: blur(14px) !important;
+}
+

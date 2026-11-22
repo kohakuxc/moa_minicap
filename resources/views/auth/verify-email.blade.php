@@ -6,12 +6,16 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Verify email · MOA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alegreya+SC:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/app.css">
 </head>
 
 <body>
     <main class="auth-page">
         <div class="auth-page-card">
+            <a class="auth-brand" href="{{ auth()->check() ? (auth()->user()->isStaff() ? route('admin.dashboard', [], false) : route('dashboard', [], false)) : '/' }}" style="margin-bottom: 20px; display: inline-flex;"><span class="brand-mark"><i></i><i></i></span><strong>MOA</strong></a>
             <h1>Verify your <em>email.</em></h1>
             <p>We sent a verification link to your email address. Verify it before accessing patient records.</p>
             @if(session('success') || session('message'))

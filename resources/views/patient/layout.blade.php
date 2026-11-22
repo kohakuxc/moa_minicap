@@ -12,6 +12,7 @@
         href="https://fonts.googleapis.com/css2?family=Alegreya+SC:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="/app.css">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 </head>
 
 <body>
@@ -31,36 +32,36 @@
             <nav class="patient-nav" aria-label="Patient portal navigation">
                 <span class="patient-nav-label">Your care</span>
                 <a class="patient-nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
-                    href="{{ route('dashboard', [], false) }}"><span class="nav-icon">⌂</span>Overview</a>
+                    href="{{ route('dashboard', [], false) }}"><span class="nav-icon"><i class="bx bx-home"></i></span>Overview</a>
                 <a class="patient-nav-link {{ request()->routeIs('patient.appointments.create') ? 'active' : '' }}"
-                    href="{{ route('patient.appointments.create', [], false) }}"><span class="nav-icon">＋</span>Book
+                    href="{{ route('patient.appointments.create', [], false) }}"><span class="nav-icon"><i class="bx bx-calendar-plus"></i></span>Book
                     appointment</a>
                 <a class="patient-nav-link {{ request()->routeIs('patient.eyewear') ? 'active' : '' }}"
-                    href="{{ route('patient.eyewear', [], false) }}"><span class="nav-icon">◉</span>Eyewear</a>
+                    href="{{ route('patient.eyewear', [], false) }}"><span class="nav-icon"><i class="bx bx-glasses"></i></span>Eyewear</a>
                 <a class="patient-nav-link {{ request()->routeIs('patient.care-services') ? 'active' : '' }}"
-                    href="{{ route('patient.care-services', [], false) }}"><span class="nav-icon">✧</span>Care
+                    href="{{ route('patient.care-services', [], false) }}"><span class="nav-icon"><i class="bx bx-first-aid"></i></span>Care
                     services</a>
                 <span class="patient-nav-label patient-nav-label-spaced">Your records</span>
                 <a class="patient-nav-link {{ request()->routeIs('patient.appointments.upcoming') ? 'active' : '' }}"
                     href="{{ route('patient.appointments.upcoming', [], false) }}"><span
-                        class="nav-icon">◷</span>Scheduled appointments</a>
+                        class="nav-icon"><i class="bx bx-time-five"></i></span>Scheduled appointments</a>
                 <a class="patient-nav-link {{ request()->routeIs('patient.prescriptions') ? 'active' : '' }}"
                     href="{{ route('patient.prescriptions', [], false) }}"><span
-                        class="nav-icon">▤</span>Prescriptions</a>
+                        class="nav-icon"><i class="bx bx-file-blank"></i></span>Prescriptions</a>
                 <a class="patient-nav-link {{ request()->routeIs('patient.appointments.history') ? 'active' : '' }}"
-                    href="{{ route('patient.appointments.history', [], false) }}"><span class="nav-icon">↺</span>Visit
+                    href="{{ route('patient.appointments.history', [], false) }}"><span class="nav-icon"><i class="bx bx-history"></i></span>Visit
                     history</a>
             </nav>
             <div class="patient-sidebar-footer">
                 <a class="patient-nav-link {{ request()->routeIs('patient.profile') ? 'active' : '' }}"
-                    href="{{ route('patient.profile', [], false) }}"><span class="nav-icon">○</span>My profile</a>
+                    href="{{ route('patient.profile', [], false) }}"><span class="nav-icon"><i class="bx bx-user-circle"></i></span>My profile</a>
                 <button class="patient-nav-link patient-logout-link" type="button" data-open-logout><span
-                        class="nav-icon">↪</span>Log out</button>
+                        class="nav-icon"><i class="bx bx-log-out"></i></span>Log out</button>
             </div>
         </aside>
         <main class="patient-content">
             <header class="patient-mobile-header">
-                <button class="sidebar-toggle" type="button" data-open-sidebar aria-label="Open navigation">☰</button>
+                <button class="sidebar-toggle" type="button" data-open-sidebar aria-label="Open navigation"><i class="bx bx-menu"></i></button>
                 <a class="brand" href="{{ route('dashboard', [], false) }}"><span
                         class="brand-mark"><i></i><i></i></span>MOA</a>
                 <span class="patient-mobile-spacer"></span>
@@ -85,6 +86,7 @@
         const sidebar = document.querySelector('[data-sidebar]'); const openSidebar = () => { sidebar?.classList.add('is-open'); document.body.classList.add('sidebar-open'); }; const closeSidebar = () => { sidebar?.classList.remove('is-open'); document.body.classList.remove('sidebar-open'); }; document.querySelector('[data-open-sidebar]')?.addEventListener('click', openSidebar); document.querySelectorAll('[data-close-sidebar]').forEach((button) => button.addEventListener('click', closeSidebar));
         const logoutModal = document.querySelector('[data-logout-modal]'); const logoutTrigger = document.querySelector('[data-open-logout]'); const closeLogout = () => { logoutModal.hidden = true; logoutTrigger?.focus(); }; logoutTrigger?.addEventListener('click', () => { logoutModal.hidden = false; logoutModal.querySelector('[data-close-logout]')?.focus(); }); logoutModal?.querySelectorAll('[data-close-logout]').forEach((button) => button.addEventListener('click', closeLogout)); logoutModal?.addEventListener('click', (event) => { if (event.target === logoutModal) closeLogout(); }); document.addEventListener('keydown', (event) => { if (event.key === 'Escape') { if (logoutModal && !logoutModal.hidden) closeLogout(); else closeSidebar(); } });
     </script>
+    @stack('modals')
     @stack('scripts')
 </body>
 

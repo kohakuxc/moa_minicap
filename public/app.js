@@ -67,6 +67,7 @@ document.querySelectorAll("[data-auth-form]").forEach((form) =>
                 "X-CSRF-TOKEN": document.querySelector(
                     'meta[name="csrf-token"]',
                 ).content,
+                "ngrok-skip-browser-warning": "true",
             },
             credentials: "same-origin",
             body: JSON.stringify(payload),
@@ -166,7 +167,7 @@ const updateBookingStep = () => {
     const back = document.querySelector("[data-prev]");
     const next = document.querySelector("[data-next]");
     back.hidden = currentStep === 1;
-    next.textContent = currentStep === 3 ? "Confirm booking  →" : "Continue  →";
+    next.textContent = currentStep === 3 ? "Confirm booking" : "Continue";
 };
 document.querySelectorAll(".choice, .date, .time").forEach((choice) =>
     choice.addEventListener("click", () => {
@@ -196,6 +197,7 @@ document.querySelector("[data-next]")?.addEventListener("click", () => {
                 "X-CSRF-TOKEN": document.querySelector(
                     'meta[name="csrf-token"]',
                 ).content,
+                "ngrok-skip-browser-warning": "true",
             },
             credentials: "same-origin",
             body: JSON.stringify({ service, starts_at: `${date} ${time}:00` }),

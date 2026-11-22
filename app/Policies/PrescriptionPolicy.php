@@ -9,11 +9,16 @@ class PrescriptionPolicy
 {
     public function view(User $user, Prescription $prescription): bool
     {
-        return $user->isAdmin() || $prescription->user_id === $user->id;
+        return $user->isStaff() || $prescription->user_id === $user->id;
     }
 
     public function create(User $user): bool
     {
-        return $user->isAdmin();
+        return $user->isOptometrist();
+    }
+
+    public function update(User $user, Prescription $prescription): bool
+    {
+        return $user->isOptometrist();
     }
 }

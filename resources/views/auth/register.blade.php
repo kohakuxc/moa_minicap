@@ -29,7 +29,7 @@
                 <li data-rule="special">1 special character</li>
             </ul>
         </div>
-        <label>Confirm password<span class="required"></span><span class="password-field"><input type="password" name="password_confirmation"
+        <label><span class="required">Confirm password</span><span class="password-field"><input type="password" name="password_confirmation"
                     autocomplete="new-password" required data-password-confirm><button type="button" class="password-toggle"
                     data-password-toggle>Show</button></span>@error('password_confirmation')<span
                     class="auth-error">{{ $message }}</span>@enderror</label>

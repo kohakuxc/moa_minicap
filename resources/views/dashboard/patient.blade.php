@@ -6,6 +6,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Patient dashboard · MOA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alegreya+SC:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/app.css">
 </head>
 
@@ -49,8 +53,7 @@
                             </select></label></div>
                     <label>Notes<textarea name="notes" rows="3"
                             placeholder="Tell us anything we should know"></textarea></label>
-                    <button class="button button-teal" type="submit">Request appointment <span
-                            aria-hidden="true">→</span></button>
+                    <button class="button button-teal" type="submit">Request appointment <i class="bx bx-right-arrow-alt"></i></button>
                 </form>
                 <p class="auth-error" data-slot-error hidden></p>
             </section>
@@ -63,11 +66,11 @@
                 </div>
                 <p class="card-description">Select what you are looking for.</p>
                 <div class="choice-grid"><button type="button"
-                        class="choice selected"><b>◉</b><span><strong>Sunglasses</strong><small>Protection with
+                        class="choice selected"><b><i class="bx bx-sun"></i></b><span><strong>Sunglasses</strong><small>Protection with
                                 signature style</small></span></button><button type="button"
-                        class="choice"><b>◌</b><span><strong>Reading glasses</strong><small>Comfort for close-up
+                        class="choice"><b><i class="bx bx-book-open"></i></b><span><strong>Reading glasses</strong><small>Comfort for close-up
                                 vision</small></span></button><button type="button"
-                        class="choice"><b>✧</b><span><strong>Prescription glasses</strong><small>Graded
+                        class="choice"><b><i class="bx bx-glasses"></i></b><span><strong>Prescription glasses</strong><small>Graded
                                 lenses</small></span></button></div>
             </section>
             <section class="dashboard-card service-card">

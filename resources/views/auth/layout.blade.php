@@ -13,7 +13,7 @@
 <body>
 <main class="auth-page auth-flow-page">
     <section class="auth-page-card auth-flow-card">
-        <a class="auth-brand" href="/"><span class="brand-mark"><i></i><i></i></span><strong>MOA</strong></a>
+        <a class="auth-brand" href="{{ auth()->check() ? (auth()->user()->isStaff() ? route('admin.dashboard', [], false) : route('dashboard', [], false)) : '/' }}"><span class="brand-mark"><i></i><i></i></span><strong>MOA</strong></a>
         @yield('content')
     </section>
 </main>

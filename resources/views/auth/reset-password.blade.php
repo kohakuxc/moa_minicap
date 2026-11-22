@@ -26,7 +26,7 @@
                     autocomplete="new-password" required data-password-confirm><button type="button" class="password-toggle"
                     data-password-toggle>Show</button></span>@error('password_confirmation')<span
                     class="auth-error">{{ $message }}</span>@enderror</label><button class="button button-teal auth-submit"
-            type="submit">Reset password <span>→</span></button>
+            type="submit">Reset password</button>
     </form>
     <p class="auth-flow-footer"><a href="/">Return to login</a></p>
 @endsection
