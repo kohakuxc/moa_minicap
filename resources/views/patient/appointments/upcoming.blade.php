@@ -10,6 +10,12 @@
         </div><a class="button button-teal" href="{{ route('patient.appointments.create', [], false) }}">Book another
             </a>
     </div>
+    @if(session('success'))
+        <p class="portal-feedback" role="status">{{ session('success') }}</p>
+    @endif
+    @if($errors->any())
+        <div class="admin-validation" role="alert" style="margin-bottom: 16px;"><span>{{ $errors->first() }}</span></div>
+    @endif
     <section class="records-panel">@forelse($appointments as $appointment)
         <article class="appointment-record">
             <div class="appointment-date">
@@ -32,7 +38,7 @@
                     <details class="cancel-details">
                         <summary>Cancel</summary>
                         <form method="POST" action="{{ route('appointments.cancel', $appointment, false) }}">@csrf
-                            @method('DELETE')<input name="reason" required placeholder="Reason"
+                            @method('DELETE')<input name="reason" required minlength="5" maxlength="500" placeholder="Reason for cancelling"
                                 aria-label="Cancellation reason"><button class="text-button" type="submit">Confirm
                                 cancellation</button></form>
                 </details>@endif

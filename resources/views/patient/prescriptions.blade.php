@@ -5,7 +5,6 @@
 @section('content')
 <div class="patient-page-head">
     <div>
-        <div class="eyebrow" style="color: var(--moa-bronze);">OPTICAL VAULT</div>
         <h1>Prescription <em>history & documents.</em></h1>
         <p>Your officially signed refractive records, available for in-clinic dispensing or external pharmacy download.</p>
     </div>

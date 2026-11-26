@@ -1,0 +1,66 @@
+##user == MOA Optical Company
+##pass == shibalcompany@1738!?
+
+ngrok http 8000 --url https://gloss-purchase-amuck.ngrok-free.dev
+
+##local == php artisan serve --host=127.0.0.1 --port=8000
+
+##ngrok == ngrok http 8000 --url https://gloss-purchase-amuck.ngrok-free.dev
+
+##url == https://gloss-purchase-amuck.ngrok-free.dev
+
+##demoUser == demo.patient@moa.local
+##demoPass == xXiYMVEIbusTVENjaqBSA9!
+
+##demoDoctor == doctor.demo@moa.local
+##docPass == tQ3rR3uYMoayaIISWwtuA9!
+
+
+Admin	admin@moa.test
+
+Optometrist	optometrist@moa.test
+
+Optician	optician@moa.test
+
+Receptionist	receptionist@moa.test
+
+Patient	patient@moa.test
+
+
+
+
+==============MongoDB==================
+
+##mongoUser == benkoykayo_db_user
+##mongoPass == B13RSSVwJNvvIQ8f
+
+db.songs.insertMany([
+{"song": "Babalik Ka Pa Ba", "artist" : "CHNDTR", "album" : "Habang Umuulan","released" : 2018},
+{"song": "Bulong", "artist" : "December Avenue", "album" : "Langit Mong Bughaw","released" :  2019},
+{"song": "Bawat Kaluluwa", "artist" : "IV of Spades", "album" : "CLAPCLAPCLAP!","released" : 2019},
+{"song": "Kathang Isip", "artist" : "Ben&Ben", "album" : "Ben&Ben","released" : 2017}])
+
+db.songs.find({released: {$in: [2017,2018]}})
+
+db.songs.deleteOne({song: "Bawat Kaluluwa"})
+
+db.songs.find()
+
+db.songs.findOne({song: "Bulong"})
+
+
+=======================================================
+
+$env:PGPASSWORD = "shibalcompany@1738!?"
+& "C:\Program Files\PostgreSQL\18\bin\psql.exe" `
+    --host="aws-1-ap-southeast-1.pooler.supabase.com" `
+    --port=5432 `
+    --username="postgres.kchkswkgfnifuimgjowe" `
+    --dbname="postgres" `
+    --file="moa_backup.sql"
+
+
+
+
+
+postgresql://postgres.yraaujoeiescxismqpyl:%t3+&VwzGpxpLk/@aws-1-ap-southeast-2.pooler.supabase.com:5432/postgres

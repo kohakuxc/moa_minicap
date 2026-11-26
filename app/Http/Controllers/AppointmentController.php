@@ -9,6 +9,7 @@ use App\Models\DigitalIntake;
 use App\Models\DoctorAvailability;
 use App\Models\DoctorLeaveBlock;
 use App\Models\User;
+use App\Support\BookingRules;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -33,10 +34,43 @@ class AppointmentController extends Controller
             'hmo_provider_name' => ['nullable', 'string', 'max:120'],
             'hmo_member_id' => ['nullable', 'string', 'max:100'],
             'preferred_eyewear' => ['nullable', 'string', 'max:60'],
+            // One-appointment policy: the patient agrees to cancel the previous booking.
+            'replace_existing' => ['nullable', 'boolean'],
+            'cancellation_reason' => ['nullable', 'string', 'max:500'],
         ]);
 
         $startsAt = now()->parse($validated['starts_at']);
-        abort_if($startsAt->isWeekend(), 422, 'Appointments are available Monday-Friday only.');
+        $reason = BookingRules::unavailableReason($startsAt->copy()->setTimezone(config('app.timezone'))->toDateString());
+        if ($reason) {
+            throw ValidationException::withMessages(['starts_at' => $reason]);
+        }
+
+        // One active appointment per account.
+        $existing = BookingRules::activeAppointmentFor($request->user());
+        $cancelReason = trim((string) ($validated['cancellation_reason'] ?? ''));
+        if ($existing) {
+            if (! $request->boolean('replace_existing')) {
+                $message = BookingRules::oneAppointmentPolicy();
+
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'message' => $message,
+                        'code' => 'existing_appointment',
+                        'appointment' => [
+                            'id' => $existing->id,
+                            'service' => $existing->service,
+                            'when' => $existing->starts_at->format('l, F j, Y \a\t g:i A'),
+                        ],
+                    ], 409);
+                }
+
+                return back()->withInput()->with('existing_appointment', true)->withErrors(['starts_at' => $message]);
+            }
+
+            if (mb_strlen($cancelReason) < BookingRules::CANCELLATION_REASON_MIN) {
+                throw ValidationException::withMessages(['cancellation_reason' => 'Please tell us why you are cancelling your previous appointment (at least '.BookingRules::CANCELLATION_REASON_MIN.' characters).']);
+            }
+        }
 
         $clinicService = ! empty($validated['service_id'])
             ? ClinicService::find($validated['service_id'])
@@ -60,9 +94,26 @@ class AppointmentController extends Controller
 
         $endsAt = $startsAt->copy()->addMinutes($durationMinutes);
 
-        $appointment = DB::transaction(function () use ($request, $validated, $startsAt, $endsAt, $doctor, $clinicService, $serviceName, $durationMinutes) {
+        $appointment = DB::transaction(function () use ($request, $validated, $startsAt, $endsAt, $doctor, $clinicService, $serviceName, $durationMinutes, $existing, $cancelReason) {
             if (DB::connection()->getDriverName() === 'pgsql') {
-                DB::select('select pg_advisory_xact_lock(hashtext(?))', [$startsAt->format('Y-m-d H:i')]);
+                DB::select('select pg_advisory_xact_lock(hashtext(?))', ['patient-appointment-'.$request->user()->id]);
+                DB::select('select pg_advisory_xact_lock(hashtext(?))', ['booking-day-'.$startsAt->toDateString()]);
+            }
+
+            // Re-check inside the lock so a double-click cannot create two active appointments.
+            $stillActive = BookingRules::activeAppointmentFor($request->user());
+            if ($stillActive && ! $existing) {
+                throw ValidationException::withMessages(['starts_at' => BookingRules::oneAppointmentPolicy()]);
+            }
+
+            if ($existing && $stillActive) {
+                $stillActive->update(['status' => 'cancelled', 'reason' => $cancelReason]);
+                AuditLog::record($request->user(), 'appointment.cancelled_by_patient_to_rebook', $stillActive);
+            }
+
+            // Re-check the daily cap inside the lock so two simultaneous requests cannot exceed it.
+            if (BookingRules::bookedCount($startsAt) >= BookingRules::DAILY_LIMIT) {
+                throw ValidationException::withMessages(['starts_at' => BookingRules::unavailableReason($startsAt->toDateString()) ?? 'This date is fully booked.']);
             }
 
             $conflict = Appointment::whereIn('status', ['requested', 'confirmed', 'in_progress'])
@@ -120,12 +171,16 @@ class AppointmentController extends Controller
     public function slots(Request $request)
     {
         $validated = $request->validate([
-            'date' => ['required', 'date', 'after_or_equal:today'],
+            'date' => ['required', 'date'],
             'doctor_id' => ['nullable', 'exists:users,id'],
         ]);
 
         $date = now()->parse($validated['date'])->toDateString();
         $doctorId = $validated['doctor_id'] ?? null;
+
+        if ($reason = BookingRules::unavailableReason($date)) {
+            return response()->json(['data' => [], 'reason' => $reason]);
+        }
 
         $doctor = $doctorId
             ? User::find($doctorId)
@@ -152,7 +207,7 @@ class AppointmentController extends Controller
         }
 
         // Fallback default slots if doctor has open schedule today (9:00 AM - 5:00 PM)
-        if ($slots->isEmpty() && ! now()->parse($date)->isWeekend()) {
+        if ($slots->isEmpty()) {
             $times = ['09:00:00', '10:00:00', '11:00:00', '13:00:00', '14:00:00', '15:00:00', '16:00:00'];
             $slots = collect($times)->map(function ($time) use ($date) {
                 $dt = now()->parse("{$date} {$time}");

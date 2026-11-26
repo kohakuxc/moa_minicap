@@ -174,7 +174,9 @@ a {
     height: 2px;
     border-radius: 2px;
     background: currentColor;
-    transition: transform .2s ease, opacity .2s ease;
+    transition:
+        transform 0.2s ease,
+        opacity 0.2s ease;
 }
 .site-header.menu-open .menu-icon i:first-child {
     transform: translateY(8px) rotate(45deg);
@@ -662,7 +664,9 @@ footer .brand {
     padding: 38px;
 }
 .logout-modal h2 {
-    font: 400 34px/1.1 "Alegreya SC", serif;
+    font:
+        400 34px/1.1 "Alegreya SC",
+        serif;
     margin: 16px 0 10px;
 }
 .logout-modal p {
@@ -758,8 +762,29 @@ footer .brand {
 }
 .date-options {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+}
+.date.unavailable {
+    opacity: 0.55;
+    background: #ebe6df;
+    cursor: not-allowed;
+}
+.date.unavailable.focused {
+    opacity: 1;
+    outline: 2px solid #c53030;
+}
+.date-reason {
+    margin: 12px 0 0;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: #fdecec;
+    color: #9b2c2c;
+    font-size: 13px;
+    line-height: 1.45;
+}
+.date-reason[hidden] {
+    display: none;
 }
 .date,
 .time {
@@ -1008,7 +1033,9 @@ footer .brand {
     align-items: center;
     gap: 9px;
     color: var(--ink);
-    font: 700 21px/1 "DM Sans", sans-serif;
+    font:
+        700 21px/1 "DM Sans",
+        sans-serif;
     text-decoration: none;
 }
 .auth-brand .brand-mark {
@@ -1019,7 +1046,9 @@ footer .brand {
 }
 .auth-flow-heading h1 {
     margin: 14px 0 11px;
-    font: 500 46px/1.05 "Alegreya SC", serif;
+    font:
+        500 46px/1.05 "Alegreya SC",
+        serif;
     letter-spacing: 0;
     text-wrap: balance;
 }
@@ -1031,7 +1060,9 @@ footer .brand {
     max-width: 430px;
     margin: 0;
     color: var(--portal-muted);
-    font: 13px/1.7 "DM Sans", sans-serif;
+    font:
+        13px/1.7 "DM Sans",
+        sans-serif;
 }
 .auth-flow-form {
     display: grid;
@@ -1040,7 +1071,9 @@ footer .brand {
 .auth-flow-form label {
     display: block;
     color: #1b2b73;
-    font: 600 11px/1.3 "DM Sans", sans-serif;
+    font:
+        600 11px/1.3 "DM Sans",
+        sans-serif;
 }
 .auth-flow-form input:not([type="checkbox"]) {
     width: 100%;
@@ -1049,7 +1082,9 @@ footer .brand {
     border-radius: 3px;
     background: #fff;
     color: var(--ink);
-    font: 13px "DM Sans", sans-serif;
+    font:
+        13px "DM Sans",
+        sans-serif;
     padding: 13px 14px;
     outline-color: var(--teal);
 }
@@ -1069,13 +1104,17 @@ footer .brand {
     background: transparent;
     color: var(--bronze);
     cursor: pointer;
-    font: 600 10px "DM Sans", sans-serif;
+    font:
+        600 10px "DM Sans",
+        sans-serif;
     padding: 0 10px;
 }
 .password-strength {
     margin-top: -7px;
     color: var(--portal-muted);
-    font: 10px/1.5 "DM Sans", sans-serif;
+    font:
+        10px/1.5 "DM Sans",
+        sans-serif;
 }
 .password-strength ul {
     display: flex;
@@ -1122,19 +1161,25 @@ footer .brand {
 .auth-form-note {
     margin: -4px 0 0;
     color: #2446a8;
-    font: 11px/1.5 "DM Sans", sans-serif;
+    font:
+        11px/1.5 "DM Sans",
+        sans-serif;
 }
 .auth-flow-footer {
     margin: 25px 0 0;
     color: var(--portal-muted);
-    font: 11px "DM Sans", sans-serif;
+    font:
+        11px "DM Sans",
+        sans-serif;
     text-align: center;
 }
 .auth-flow-card .auth-error {
     display: block;
     margin: 6px 0 0;
     color: #2446a8;
-    font: 11px/1.4 "DM Sans", sans-serif;
+    font:
+        11px/1.4 "DM Sans",
+        sans-serif;
 }
 @media (max-width: 560px) {
     .auth-flow-page {
@@ -1386,7 +1431,7 @@ h2,
     color: #5f5954;
     font-size: 11px;
     font-weight: 700;
-    letter-spacing: .3px;
+    letter-spacing: 0.3px;
 }
 .profile-form input,
 .dashboard-card input,
@@ -1482,7 +1527,9 @@ h2,
     min-width: 25px;
 }
 .dashboard-card h2 {
-    font: 400 25px/1.15 "Alegreya SC", serif;
+    font:
+        400 25px/1.15 "Alegreya SC",
+        serif;
     margin: 5px 0 0;
 }
 .form-row {
@@ -1656,7 +1703,7 @@ h2,
     width: 252px;
     padding: 28px 18px 32px;
     border-right: 1px solid var(--line);
-    background: rgba(250, 248, 245, .96);
+    background: rgba(250, 248, 245, 0.96);
     overflow-y: auto;
     overflow-x: hidden;
     overscroll-behavior: contain;
@@ -1749,7 +1796,10 @@ h2,
     font-size: 12px;
     padding: 11px 12px;
     text-align: left;
-    transition: .2s background, .2s color, .2s transform;
+    transition:
+        0.2s background,
+        0.2s color,
+        0.2s transform;
 }
 .patient-nav-link:hover,
 .patient-nav-link.active {
@@ -1778,7 +1828,13 @@ h2,
     min-height: 100vh;
     margin-left: 252px;
     padding: 0 7% 75px;
-    font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family:
+        "DM Sans",
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        sans-serif;
     color: var(--ink);
 }
 .patient-content input,
@@ -1807,7 +1863,13 @@ h2,
 .patient-content .prescription-record p,
 .patient-content .history-record p,
 .patient-content .auth-error {
-    font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family:
+        "DM Sans",
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        sans-serif;
 }
 .patient-content h1,
 .patient-content h2,
@@ -1862,7 +1924,9 @@ h2,
 .reg-page-head h1 {
     max-width: 720px;
     margin: 15px 0 12px;
-    font: 400 52px/1.05 "Alegreya SC", serif;
+    font:
+        400 52px/1.05 "Alegreya SC",
+        serif;
     letter-spacing: 0;
 }
 
@@ -1876,7 +1940,9 @@ h2,
 .patient-page-head h1 {
     max-width: 720px;
     margin: 15px 0 12px;
-    font: 400 52px/1.05 "Alegreya SC", serif;
+    font:
+        400 52px/1.05 "Alegreya SC",
+        serif;
     letter-spacing: 0;
 }
 .patient-page-head h1 em {
@@ -1906,7 +1972,9 @@ h2,
 }
 .overview-next h2 {
     margin: 12px 0 6px;
-    font: 400 28px/1.1 "Alegreya SC", serif;
+    font:
+        400 28px/1.1 "Alegreya SC",
+        serif;
 }
 .overview-next p {
     margin: 0;
@@ -1936,7 +2004,9 @@ h2,
     border-radius: var(--portal-radius);
     background: #fff;
     padding: 23px;
-    transition: .2s transform, .2s box-shadow;
+    transition:
+        0.2s transform,
+        0.2s box-shadow;
 }
 .overview-card-icon {
     position: absolute;
@@ -1947,7 +2017,9 @@ h2,
     line-height: 1;
 }
 .overview-card strong {
-    font: 500 34px/1 "Alegreya SC", serif;
+    font:
+        500 34px/1 "Alegreya SC",
+        serif;
 }
 .overview-card > span:not(.overview-card-icon) {
     font-size: 11px;
@@ -1966,7 +2038,7 @@ h2,
 }
 .overview-links {
     display: grid;
-    grid-template-columns: .8fr 1.2fr;
+    grid-template-columns: 0.8fr 1.2fr;
     gap: 50px;
     margin-top: 52px;
     padding-top: 27px;
@@ -1975,7 +2047,9 @@ h2,
 .overview-links h2 {
     max-width: 210px;
     margin: 13px 0 0;
-    font: 400 27px/1.15 "Alegreya SC", serif;
+    font:
+        400 27px/1.15 "Alegreya SC",
+        serif;
 }
 .overview-link-list a {
     display: grid;
@@ -2012,7 +2086,7 @@ h2,
 }
 .split-page-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1.25fr) minmax(260px, .75fr);
+    grid-template-columns: minmax(0, 1.25fr) minmax(260px, 0.75fr);
     gap: 18px;
 }
 .portal-panel,
@@ -2028,7 +2102,7 @@ h2,
 }
 .booking-panel [aria-busy="true"] {
     cursor: wait;
-    opacity: .7;
+    opacity: 0.7;
 }
 .booking-panel button[aria-busy="true"]::after {
     width: 12px;
@@ -2038,17 +2112,17 @@ h2,
     border-right-color: transparent;
     border-radius: 50%;
     content: "";
-    animation: portal-spin .7s linear infinite;
+    animation: portal-spin 0.7s linear infinite;
 }
 .portal-feedback {
-    margin: -20px 0 22px;
+    margin: -20px auto 22px;
     border-left: 3px solid var(--teal);
     border-radius: var(--portal-inner-radius);
     background: #edf8f5;
     color: #23655e !important;
     padding: 12px 15px;
     font-size: 12px;
-    animation: portal-feedback .35s ease both;
+    animation: portal-feedback 0.35s ease both;
 }
 .panel-kicker {
     display: flex;
@@ -2092,7 +2166,9 @@ h2,
 }
 .portal-note h2 {
     margin: 15px 0 12px;
-    font: 400 29px/1.15 "Alegreya SC", serif;
+    font:
+        400 29px/1.15 "Alegreya SC",
+        serif;
 }
 .portal-note p {
     color: #82776e;
@@ -2114,7 +2190,7 @@ h2,
 .eyewear-choice-featured {
     grid-column: span 2;
     display: grid;
-    grid-template-columns: minmax(220px, .9fr) 1fr;
+    grid-template-columns: minmax(220px, 0.9fr) 1fr;
     gap: 25px;
     background: #edf8f5;
     border-color: #d5e8e4;
@@ -2146,7 +2222,9 @@ h2,
 .eyewear-choice h2,
 .service-page-list h2 {
     margin: 12px 0 9px;
-    font: 400 26px/1.15 "Alegreya SC", serif;
+    font:
+        400 26px/1.15 "Alegreya SC",
+        serif;
 }
 .eyewear-choice p,
 .service-page-list p {
@@ -2225,7 +2303,9 @@ h2,
     text-align: center;
 }
 .appointment-date strong {
-    font: 400 22px "Alegreya SC", serif;
+    font:
+        400 22px "Alegreya SC",
+        serif;
 }
 .appointment-date span {
     color: var(--bronze);
@@ -2238,7 +2318,9 @@ h2,
 .prescription-record h2,
 .history-record h2 {
     margin: 7px 0 5px;
-    font: 400 20px "Alegreya SC", serif;
+    font:
+        400 20px "Alegreya SC",
+        serif;
 }
 .appointment-details p,
 .prescription-record p,
@@ -2331,7 +2413,9 @@ h2,
 }
 .history-date span {
     margin-top: 7px;
-    font: 400 17px "Alegreya SC", serif;
+    font:
+        400 17px "Alegreya SC",
+        serif;
 }
 .records-empty {
     padding: 68px 28px;
@@ -2344,11 +2428,19 @@ h2,
     line-height: 1;
 }
 @keyframes portal-spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 @keyframes portal-feedback {
-    from { opacity: 0; transform: translateY(-5px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 .records-empty > span {
     color: var(--bronze);
@@ -2356,7 +2448,9 @@ h2,
 }
 .records-empty h2 {
     margin: 14px 0 8px;
-    font: 400 26px "Alegreya SC", serif;
+    font:
+        400 26px "Alegreya SC",
+        serif;
 }
 .records-empty p {
     color: var(--muted);
@@ -2373,7 +2467,7 @@ h2,
     }
     .patient-sidebar {
         transform: translateX(-100%);
-        transition: transform .25s ease;
+        transition: transform 0.25s ease;
         box-shadow: 12px 0 35px #25242118;
     }
     .patient-sidebar.is-open {
@@ -2486,7 +2580,7 @@ body {
     background: var(--warm);
 }
 .site-header {
-    background: rgba(247, 249, 255, .92);
+    background: rgba(247, 249, 255, 0.92);
     position: sticky;
     top: 0;
     z-index: 50;
@@ -2512,8 +2606,8 @@ body {
     border-color: #9aabe4;
 }
 .button-quiet {
-    background: #e8eeff;
-    color: #20357e;
+    background: #8fe9e4;
+    color: #ffffff;
 }
 .hero-orb {
     background: #4cc9f0;
@@ -2590,7 +2684,7 @@ body {
     background: var(--warm);
 }
 .patient-sidebar {
-    background: rgba(247, 249, 255, .97);
+    background: rgba(247, 249, 255, 0.97);
 }
 .patient-nav-link:hover,
 .patient-nav-link.active {
@@ -2644,7 +2738,7 @@ body {
     width: 252px;
     padding: 28px 18px 32px;
     border-right: 1px solid var(--line);
-    background: rgba(247, 249, 255, .97);
+    background: rgba(247, 249, 255, 0.97);
     overflow-y: auto;
     overflow-x: hidden;
     overscroll-behavior: contain;
@@ -2707,7 +2801,13 @@ body {
     margin-left: 252px;
     padding: 0 7% 75px;
     color: var(--ink);
-    font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family:
+        "DM Sans",
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        sans-serif;
 }
 .admin-content > * {
     max-width: 1120px;
@@ -2729,7 +2829,13 @@ body {
 .admin-content table,
 .admin-content th,
 .admin-content td {
-    font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family:
+        "DM Sans",
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        sans-serif;
 }
 .admin-page-head h1,
 .admin-section-head h2,
@@ -2744,7 +2850,9 @@ body {
 }
 .admin-page-head h1 {
     margin: 15px 0 12px;
-    font: 500 52px/1.05 "Alegreya SC", serif;
+    font:
+        500 52px/1.05 "Alegreya SC",
+        serif;
     letter-spacing: 0;
     text-wrap: balance;
 }
@@ -2782,7 +2890,9 @@ body {
 }
 .admin-stat-card strong {
     margin-top: 17px;
-    font: 500 34px/1 "Alegreya SC", serif;
+    font:
+        500 34px/1 "Alegreya SC",
+        serif;
     font-variant-numeric: tabular-nums;
 }
 .admin-stat-card > span:last-child {
@@ -2806,7 +2916,9 @@ body {
 }
 .admin-section-head h2 {
     margin: 9px 0 7px;
-    font: 500 27px/1.1 "Alegreya SC", serif;
+    font:
+        500 27px/1.1 "Alegreya SC",
+        serif;
     text-wrap: balance;
 }
 .admin-availability-form {
@@ -2906,7 +3018,9 @@ body {
 .admin-patient h3,
 .admin-prescription h3 {
     margin: 6px 0 4px;
-    font: 500 19px/1.1 "Alegreya SC", serif;
+    font:
+        500 19px/1.1 "Alegreya SC",
+        serif;
 }
 .admin-update-form {
     display: grid;
@@ -2969,21 +3083,21 @@ body {
 .admin-validation {
     display: grid;
     gap: 3px;
-    margin: -10px 0 18px;
+    margin: -10px auto 18px;
     border-left: 3px solid #4169e1;
     border-radius: var(--portal-inner-radius);
     background: #e8eeff;
     padding: 12px 15px;
     color: #20357e;
     font-size: 11px;
-    animation: portal-feedback .35s ease both;
+    animation: portal-feedback 0.35s ease both;
 }
 .admin-validation span {
     color: #52638f;
 }
 .admin-content [aria-busy="true"] {
     cursor: wait;
-    opacity: .7;
+    opacity: 0.7;
 }
 .admin-content button[aria-busy="true"]::after {
     width: 11px;
@@ -2993,7 +3107,7 @@ body {
     border-right-color: transparent;
     border-radius: 50%;
     content: "";
-    animation: portal-spin .7s linear infinite;
+    animation: portal-spin 0.7s linear infinite;
 }
 .admin-content .pagination {
     display: flex;
@@ -3028,7 +3142,7 @@ body {
     }
     .admin-sidebar {
         transform: translateX(-100%);
-        transition: transform .25s ease;
+        transition: transform 0.25s ease;
         box-shadow: 12px 0 35px #03127318;
     }
     .admin-sidebar.is-open {
@@ -3108,23 +3222,22 @@ body {
     letter-spacing: 0;
 }
 
-.required::after{
+.required::after {
     content: "*";
     color: red;
     margin-left: 2px;
     font-weight: bold;
 }
 
-
 /* --- MOA Optical Clinic: Expansion Styles (Palette: #F0BA7F, #9F652C, #64BCB4, #959192, #C0A37F) --- */
 :root {
-    --moa-gold: #F0BA7F;
-    --moa-bronze: #9F652C;
-    --moa-teal: #64BCB4;
+    --moa-gold: #f0ba7f;
+    --moa-bronze: #9f652c;
+    --moa-teal: #64bcb4;
     --moa-slate: #959192;
-    --moa-sand: #C0A37F;
-    --moa-dark: #1F2421;
-    --moa-light-bg: #FCFAF7;
+    --moa-sand: #c0a37f;
+    --moa-dark: #1f2421;
+    --moa-light-bg: #fcfaf7;
 }
 
 .admin-nav-tabs {
@@ -3132,7 +3245,7 @@ body {
     gap: 8px;
     margin: 20px 0;
     padding-bottom: 4px;
-    border-bottom: 2px solid #EFE9E1;
+    border-bottom: 2px solid #efe9e1;
     overflow-x: auto;
 }
 .admin-nav-tab {
@@ -3165,29 +3278,39 @@ body {
 }
 .kpi-card-custom {
     background: #fff;
-    border: 1px solid #E5DFD7;
+    border: 1px solid #e5dfd7;
     border-radius: 12px;
     padding: 20px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
     position: relative;
     overflow: hidden;
 }
 .kpi-card-custom::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 4px;
 }
-.kpi-card-custom.kpi-appointments::before { background: var(--moa-teal); }
-.kpi-card-custom.kpi-noshow::before { background: var(--moa-slate); }
-.kpi-card-custom.kpi-revenue::before { background: var(--moa-bronze); }
-.kpi-card-custom.kpi-lab::before { background: var(--moa-gold); }
-.kpi-card-custom.kpi-inventory::before { background: #E0564C; }
+.kpi-card-custom.kpi-appointments::before {
+    background: var(--moa-teal);
+}
+.kpi-card-custom.kpi-noshow::before {
+    background: var(--moa-slate);
+}
+.kpi-card-custom.kpi-revenue::before {
+    background: var(--moa-bronze);
+}
+.kpi-card-custom.kpi-lab::before {
+    background: var(--moa-gold);
+}
+.kpi-card-custom.kpi-inventory::before {
+    background: #e0564c;
+}
 
 .kpi-header {
     display: flex;
@@ -3200,7 +3323,9 @@ body {
     color: var(--moa-slate);
 }
 .kpi-value {
-    font: 600 32px/1 "Alegreya SC", serif;
+    font:
+        600 32px/1 "Alegreya SC",
+        serif;
     color: var(--moa-dark);
     margin: 14px 0 6px;
 }
@@ -3218,8 +3343,8 @@ body {
     margin-top: 18px;
 }
 .queue-col {
-    background: #F9F7F4;
-    border: 1px solid #E5DFD7;
+    background: #f9f7f4;
+    border: 1px solid #e5dfd7;
     border-radius: 12px;
     padding: 16px;
     display: flex;
@@ -3232,31 +3357,35 @@ body {
     font-weight: 700;
     font-size: 13px;
     padding-bottom: 12px;
-    border-bottom: 2px solid #EAE4DC;
+    border-bottom: 2px solid #eae4dc;
     margin-bottom: 14px;
 }
 .queue-badge-count {
-    background: #E0D9D0;
-    color: #4A4540;
+    background: #e0d9d0;
+    color: #4a4540;
     border-radius: 12px;
     padding: 2px 8px;
     font-size: 11px;
 }
 .queue-card {
     background: #fff;
-    border: 1px solid #E5DFD7;
+    border: 1px solid #e5dfd7;
     border-radius: 8px;
     padding: 14px;
     margin-bottom: 12px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
 }
 .queue-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
 }
 .ticket-badge {
-    font: 700 16px/1 "Alegreya SC", serif;
+    font:
+        700 16px/1 "Alegreya SC",
+        serif;
     background: rgba(240, 186, 127, 0.25);
     color: var(--moa-bronze);
     padding: 4px 8px;
@@ -3272,23 +3401,23 @@ body {
     font-size: 13px;
 }
 .ehr-table th {
-    background: #F5EFEB;
+    background: #f5efeb;
     color: var(--moa-bronze);
     font-weight: 700;
     padding: 10px;
     text-align: left;
-    border: 1px solid #E2D9D0;
+    border: 1px solid #e2d9d0;
 }
 .ehr-table td {
     padding: 8px 10px;
-    border: 1px solid #E2D9D0;
+    border: 1px solid #e2d9d0;
     background: #fff;
 }
 .ehr-table input,
 .ehr-table select {
     width: 100%;
     padding: 6px 8px;
-    border: 1px solid #D5CBC0;
+    border: 1px solid #d5cbc0;
     border-radius: 4px;
     font-size: 13px;
 }
@@ -3321,19 +3450,21 @@ body {
 .audit-stream {
     max-height: 380px;
     overflow-y: auto;
-    border: 1px solid #E5DFD7;
+    border: 1px solid #e5dfd7;
     border-radius: 8px;
     background: #fff;
 }
 .audit-row {
     padding: 10px 14px;
-    border-bottom: 1px solid #F0EAE3;
+    border-bottom: 1px solid #f0eae3;
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-size: 12px;
 }
-.audit-row:last-child { border-bottom: none; }
+.audit-row:last-child {
+    border-bottom: none;
+}
 .audit-action-tag {
     background: rgba(159, 101, 44, 0.1);
     color: var(--moa-bronze);
@@ -3368,7 +3499,13 @@ body {
 .service-page-list,
 .eyewear-grid,
 .records-panel {
-    font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family:
+        "DM Sans",
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        sans-serif;
 }
 
 /* Ensure all form elements and interface controls inherit the clean DM Sans font */
@@ -3393,7 +3530,13 @@ body {
 .auth-page textarea,
 .auth-page button,
 .auth-page label {
-    font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family:
+        "DM Sans",
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        sans-serif;
 }
 
 /* Consistent Serif Headings & Brand Elements across all pages */
@@ -3426,7 +3569,9 @@ pre,
 .audit-action-tag,
 .audit-hash,
 .sig-hash {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-family:
+        ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+        "Liberation Mono", "Courier New", monospace;
 }
 
 /* Modal Fullscreen & Complete Backdrop Blur */
@@ -3449,3 +3594,347 @@ pre,
     -webkit-backdrop-filter: blur(14px) !important;
 }
 
+.replace-panel h3 {
+    margin: 0 0 8px;
+    font-size: 20px;
+}
+.replace-panel p {
+    font-size: 14px;
+    line-height: 1.5;
+}
+.replace-panel .replace-current {
+    background: #f6f1ea;
+    border-radius: 8px;
+    padding: 10px 12px;
+}
+.replace-panel label {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-weight: 600;
+    font-size: 13px;
+    margin-top: 12px;
+}
+.replace-panel label.check-row {
+    flex-direction: row;
+    font-weight: 400;
+}
+.replace-panel textarea {
+    padding: 10px;
+    border: 1px solid #d5cbc0;
+    border-radius: 6px;
+    font: inherit;
+}
+.replace-panel[hidden] {
+    display: none;
+}
+
+/* From Uiverse.io by Shoh2008 */
+.lds-ellipsis {
+    display: inline-block;
+    position: relative;
+    width: 80px;
+    height: 80px;
+}
+
+.lds-ellipsis div {
+    position: absolute;
+    top: 33px;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: #fff;
+    animation-timing-function: cubic-bezier(0, 1, 1, 0);
+}
+
+.lds-ellipsis div:nth-child(1) {
+    left: 8px;
+    animation: lds-ellipsis1 0.6s infinite;
+}
+
+.lds-ellipsis div:nth-child(2) {
+    left: 8px;
+    animation: lds-ellipsis2 0.6s infinite;
+}
+
+.lds-ellipsis div:nth-child(3) {
+    left: 32px;
+    animation: lds-ellipsis2 0.6s infinite;
+}
+
+.lds-ellipsis div:nth-child(4) {
+    left: 56px;
+    animation: lds-ellipsis3 0.6s infinite;
+}
+
+@keyframes lds-ellipsis1 {
+    0% {
+        transform: scale(0);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes lds-ellipsis3 {
+    0% {
+        transform: scale(1);
+    }
+
+    100% {
+        transform: scale(0);
+    }
+}
+
+@keyframes lds-ellipsis2 {
+    0% {
+        transform: translate(0, 0);
+    }
+
+    100% {
+        transform: translate(24px, 0);
+    }
+}
+
+.button .lds-ellipsis {
+    height: 18px;
+    transform: scale(0.7);
+    pointer-events: none;
+}
+
+.button .lds-ellipsis div {
+    top: 2.5px;
+}
+
+/* Patient portal: consumer-facing top navigation (replaces admin-style sidebar) */
+.patient-topbar {
+    gap: 32px;
+}
+.patient-topbar .patient-topnav {
+    align-items: center;
+}
+.patient-content {
+    margin-left: 0;
+    max-width: 1180px;
+    margin-inline: auto;
+    padding: 0 5% 75px;
+}
+.patient-topnav a.active,
+.account-menu.active > summary {
+    color: var(--ink);
+    font-weight: 600;
+}
+.account-menu {
+    position: relative;
+}
+.account-menu > summary {
+    list-style: none;
+    cursor: pointer;
+    color: #77716c;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.account-menu > summary::-webkit-details-marker {
+    display: none;
+}
+.account-menu > summary:hover {
+    color: var(--ink);
+}
+.account-menu-panel {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 18px);
+    min-width: 240px;
+    padding: 8px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    box-shadow: 0 14px 35px #25242120;
+    display: flex;
+    flex-direction: column;
+    z-index: 60;
+}
+.account-menu-panel a,
+.account-menu-panel button {
+    display: block;
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 4px;
+    background: transparent;
+    color: #55504c;
+    font: inherit;
+    font-size: 13px;
+    text-align: left;
+    border: 0;
+    cursor: pointer;
+}
+.account-menu-panel a:hover,
+.account-menu-panel a.active,
+.account-menu-panel button:hover {
+    background: #e8f4f1;
+    color: #23655e;
+}
+.account-menu-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px 12px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid var(--line);
+}
+.account-menu-user strong,
+.account-menu-user small {
+    display: block;
+}
+.account-menu-user strong {
+    font-size: 13px;
+}
+.account-menu-user small {
+    color: var(--muted);
+    font-size: 11px;
+}
+@media (max-width: 900px) {
+    .patient-topbar {
+        gap: 16px;
+        justify-content: space-between;
+        height: 70px;
+    }
+    .patient-topbar .header-actions {
+        display: none;
+    }
+    .patient-topbar .menu-button {
+        display: flex;
+    }
+    .patient-topbar.menu-open {
+        height: auto;
+        min-height: 70px;
+        flex-wrap: wrap;
+        padding-bottom: 12px;
+    }
+    .patient-topbar.menu-open .patient-topnav {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+        order: 3;
+        gap: 14px;
+        margin: 8px 0 0;
+    }
+    .account-menu-panel {
+        position: static;
+        box-shadow: none;
+        border: 0;
+        padding: 4px 0 0 8px;
+    }
+    .patient-content {
+        padding: 0 5% 55px;
+    }
+}
+
+.overview-summary {
+    margin: 0 0 32px;
+    color: var(--portal-muted, #6f6862);
+    font-size: 15px;
+    line-height: 1.6;
+}
+.overview-summary a {
+    color: #23655e;
+    border-bottom: 1px solid currentColor;
+}
+
+.overview-next-meta {
+    margin-top: 6px;
+    font-size: 13px;
+    color: var(--portal-muted, #6f6862);
+}
+.overview-next-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+}
+.overview-next-actions .cancel-details {
+    margin: 0;
+}
+
+/* Appointment banner: consistent action row */
+.overview-next {
+    gap: 28px;
+}
+.overview-next-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px 16px;
+}
+.overview-next-actions .button {
+    margin: 0;
+}
+.overview-next-actions .text-link {
+    padding: 0;
+    background: none;
+    border: 0;
+    cursor: pointer;
+}
+.overview-next-actions .cancel-trigger {
+    color: #a8452f;
+}
+.cancel-form label {
+    display: block;
+    margin: 16px 0 6px;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: left;
+}
+.cancel-form textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    font: inherit;
+    font-size: 13px;
+    resize: vertical;
+    box-sizing: border-box;
+}
+.cancel-form .logout-actions {
+    margin-top: 18px;
+}
+@media (max-width: 620px) {
+    .overview-next-actions {
+        justify-content: flex-start;
+    }
+}
+
+/* Dashboard header: natural-case heading, single-line CTA */
+.patient-content .overview-head {
+    padding: 48px 0 28px;
+}
+.patient-content .overview-head h1 {
+    max-width: none;
+    margin: 0 0 8px;
+    font-size: clamp(28px, 3.2vw, 38px);
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: -0.5px;
+    text-transform: none;
+}
+.patient-content .overview-head h1 em {
+    font-style: normal;
+    color: var(--bronze);
+}
+.site-header .button,
+.patient-topbar .button {
+    white-space: nowrap;
+}
+.patient-topbar .header-actions {
+    flex: 0 0 auto;
+}
+.patient-content .portal-feedback,
+.patient-content .admin-validation {
+    margin: 0 0 22px;
+    font-size: 13px;
+}

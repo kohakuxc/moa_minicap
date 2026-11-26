@@ -5,7 +5,6 @@
 @section('content')
 <div class="patient-page-head">
     <div>
-        <div class="eyebrow" style="color: var(--moa-bronze);">CURATED EYEWEAR COLLECTION</div>
         <h1>Find frames that fit <em>your signature style.</em></h1>
         <p>Explore handcrafted titanium and artisan acetate frames. Reserve up to 2 frames online for a personalized in-store fitting.</p>
     </div>

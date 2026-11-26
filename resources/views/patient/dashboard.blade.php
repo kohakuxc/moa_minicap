@@ -5,13 +5,16 @@
 @section('content')
     <div class="patient-page-head overview-head">
         <div>
-            <h1>Welcome back, <em>{{ $user->name }}</em></h1>
+            <h1>Welcome back, <em>{{ \Illuminate\Support\Str::title(mb_strtolower(explode(' ', trim($user->name))[0])) }}</em></h1>
             <p>Keep your next appointment, verified prescriptions, eyewear orders, and visit summaries close at hand.</p>
         </div>
-        <a class="button button-teal button-primary" href="{{ route('patient.appointments.create', [], false) }}">
-            Book an appointment
-        </a>
     </div>
+    @if(session('success'))
+        <p class="portal-feedback" role="status">{{ session('success') }}</p>
+    @endif
+    @if($errors->any())
+        <div class="admin-validation" role="alert"><span>{{ $errors->first() }}</span></div>
+    @endif
 
     <!-- Active Eyewear Lab Order Tracker -->
     @if(isset($activeLabOrders) && $activeLabOrders->isNotEmpty())
@@ -29,7 +32,6 @@
         <section class="admin-panel" style="background: #fff; border: 1px solid #E5DFD7; border-radius: 12px; padding: 22px; margin-bottom: 24px; border-left: 4px solid var(--moa-teal);">
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; flex-wrap: wrap; gap: 8px;">
                 <div>
-                    <div class="eyebrow" style="color: var(--moa-bronze);">LIVE EYEWEAR FABRICATION TRACKER</div>
                     <h2 style="margin: 4px 0 2px; font-size: 20px;">Order #{{ $order->order_number }}</h2>
                     <p style="margin: 0; color: var(--moa-slate); font-size: 13px;">
                         {{ $order->frame ? $order->frame->brand.' '.$order->frame->model_name : 'Custom Eyewear' }}
@@ -86,7 +88,6 @@
                     @endforeach
                 </span>
             </div>
-            <a href="{{ route('patient.eyewear') }}" class="button button-quiet" style="font-size: 11px; padding: 5px 12px;">Browse Eyewear <i class="bx bx-right-arrow-alt"></i></a>
         </div>
     @endif
 
@@ -94,54 +95,68 @@
         <div>
             <h2>{{ $nextAppointment ? $nextAppointment->starts_at->format('l, M j') : 'Nothing scheduled yet' }}</h2>
             <p>{{ $nextAppointment ? $nextAppointment->service . ' · ' . $nextAppointment->starts_at->format('g:i A') . ($nextAppointment->specialist ? ' with '.$nextAppointment->specialist : '') : 'Choose a time when you are ready to see the doctor.' }}</p>
+            @if($nextAppointment)
+                <p class="overview-next-meta"><i class="bx bx-map"></i> MOA Optical Clinic · Quezon City {{ $nextAppointment->exam_room ? "· Room ".$nextAppointment->exam_room : "" }}</p>
+            @endif
         </div>
-        <a class="text-link" href="{{ route('patient.appointments.upcoming', [], false) }}">View appointments</a>
+        @if($nextAppointment)
+            @php
+                $calStart = $nextAppointment->starts_at->copy()->utc();
+                $calEnd = $calStart->copy()->addMinutes($nextAppointment->duration_minutes ?? 30);
+                $calUrl = 'https://calendar.google.com/calendar/render?'.http_build_query([
+                    'action' => 'TEMPLATE',
+                    'text' => $nextAppointment->service.' at MOA Optical Clinic',
+                    'dates' => $calStart->format('Ymd\THis\Z').'/'.$calEnd->format('Ymd\THis\Z'),
+                    'details' => 'Appointment with '.($nextAppointment->specialist ?: 'the MOA care team'),
+                    'location' => 'MOA Optical Clinic, Quezon City',
+                ]);
+            @endphp
+            <div class="overview-next-actions">
+                <a class="button button-teal button-small" href="{{ $calUrl }}" target="_blank" rel="noopener">Add to calendar</a>
+                <a class="button button-quiet button-small" href="{{ route('patient.appointments.create', [], false) }}">Reschedule</a>
+                <button class="text-link cancel-trigger" type="button" data-open-cancel>Cancel appointment</button>
+                <a class="text-link" href="{{ route('patient.appointments.upcoming', [], false) }}">All appointments</a>
+            </div>
+        @else
+            <a class="button button-teal button-small" href="{{ route('patient.appointments.create', [], false) }}">Book an appointment</a>
+        @endif
     </section>
 
-    <div class="overview-grid">
-        <a class="overview-card" href="{{ route('patient.appointments.upcoming', [], false) }}">
-            <span class="overview-card-icon" aria-hidden="true"><i class="bx bx-time-five"></i></span>
-            <strong>{{ $upcomingCount }}</strong>
-            <span>Scheduled appointments</span>
-            <b>View</b>
-        </a>
-        <a class="overview-card" href="{{ route('patient.prescriptions', [], false) }}">
-            <span class="overview-card-icon" aria-hidden="true"><i class="bx bx-file-blank"></i></span>
-            <strong>{{ $prescriptionCount }}</strong>
-            <span>Prescriptions in vault</span>
-            <b>Download</b>
-        </a>
-        <a class="overview-card" href="{{ route('patient.appointments.history', [], false) }}">
-            <span class="overview-card-icon" aria-hidden="true"><i class="bx bx-history"></i></span>
-            <strong>{{ $visitCount }}</strong>
-            <span>Past visits & receipts</span>
-            <b>History</b>
-        </a>
-    </div>
+    <p class="overview-summary">
+        @if($upcomingCount + $prescriptionCount + $visitCount === 0)
+            Your records are empty for now. After your first eye exam, your verified prescription and visit receipts will appear here.
+        @else
+            You have {{ $upcomingCount }} upcoming {{ \Illuminate\Support\Str::plural('appointment', $upcomingCount) }},
+            {{ $prescriptionCount }} {{ \Illuminate\Support\Str::plural('prescription', $prescriptionCount) }} on file and
+            {{ $visitCount }} past {{ \Illuminate\Support\Str::plural('visit', $visitCount) }}.
+            @if($prescriptionCount === 0) Your verified prescription will appear here after your first exam. @endif
+        @endif
+    </p>
 
-    <section class="overview-links">
-        <div>
-            <h2>Choose what you need today.</h2>
+@push('modals')
+    @if($nextAppointment)
+        <div class="modal-backdrop logout-modal-backdrop" data-cancel-modal hidden>
+            <section class="modal logout-modal" role="dialog" aria-modal="true" aria-labelledby="cancel-title">
+                <button class="modal-close" type="button" data-close-cancel aria-label="Close dialog">×</button>
+                <h2 id="cancel-title">Cancel this appointment?</h2>
+                <p>{{ $nextAppointment->service }} · {{ $nextAppointment->starts_at->format('l, M j · g:i A') }}. Please tell us why so we can improve.</p>
+                <form method="POST" action="{{ route('appointments.cancel', $nextAppointment, false) }}" class="cancel-form">@csrf
+                    @method('DELETE')
+                    <label for="cancel-reason">Reason for cancelling</label>
+                    <textarea id="cancel-reason" name="reason" required minlength="5" maxlength="500" rows="3" placeholder="At least 5 characters"></textarea>
+                    <div class="logout-actions">
+                        <button class="button button-quiet" type="button" data-close-cancel>Keep appointment</button>
+                        <button class="button button-dark" type="submit">Confirm cancellation</button>
+                    </div>
+                </form>
+            </section>
         </div>
-        <div class="overview-link-list">
-            <a href="{{ route('patient.eyewear', [], false) }}">
-                <span>01</span>
-                <strong>Explore eyewear showcase</strong>
-                <b><i class="bx bx-right-arrow-alt"></i></b>
-                <br><small>Filter frames by face shape & reserve in-store try-on</small>
-            </a>    
-            <a href="{{ route('patient.care-services', [], false) }}">
-                <span>02</span>
-                <strong>View care services & fees</strong>
-                <b><i class="bx bx-right-arrow-alt"></i></b>
-                <br><small>Routine exams, contact lens fittings, and glaucoma care</small>
-            </a>
-            <a href="{{ route('patient.prescriptions', [], false) }}">
-                <span>03</span>
-                <strong>Download signed prescription</strong>
-                <b><i class="bx bx-right-arrow-alt"></i></b>
-                <br><small>Verified copies with tamper-evident digital token</small>
-            </a>
-        </div>
-    </section>
+    @endif
+@endpush
+
+@push('scripts')
+    <script>
+        (() => { const modal = document.querySelector('[data-cancel-modal]'); if (!modal) return; const trigger = document.querySelector('[data-open-cancel]'); const close = () => { modal.hidden = true; trigger?.focus(); }; trigger?.addEventListener('click', () => { modal.hidden = false; modal.querySelector('textarea')?.focus(); }); modal.querySelectorAll('[data-close-cancel]').forEach((b) => b.addEventListener('click', close)); modal.addEventListener('click', (e) => { if (e.target === modal) close(); }); document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modal.hidden) close(); }); })();
+    </script>
+@endpush
 @endsection

@@ -11,6 +11,7 @@ use App\Models\LabOrder;
 use App\Models\Prescription;
 use App\Models\TryOnReservation;
 use App\Models\User;
+use App\Support\BookingRules;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
@@ -72,6 +73,7 @@ class PatientController extends Controller
             'services' => $services,
             'doctors' => $doctors,
             'hmoProviders' => $hmoProviders,
+            'activeAppointment' => BookingRules::activeAppointmentFor($request->user()),
         ]);
     }
 
@@ -246,9 +248,21 @@ class PatientController extends Controller
     public function cancelAppointment(Request $request, Appointment $appointment)
     {
         Gate::authorize('delete', $appointment);
+
+        $validated = $request->validate([
+            'reason' => ['required', 'string', 'min:'.BookingRules::CANCELLATION_REASON_MIN, 'max:500'],
+        ], [
+            'reason.required' => 'Please tell us why you are cancelling this appointment.',
+            'reason.min' => 'Please give a little more detail about why you are cancelling (at least '.BookingRules::CANCELLATION_REASON_MIN.' characters).',
+        ]);
+
+        if (! in_array($appointment->status, BookingRules::ACTIVE_STATUSES, true)) {
+            return back()->withErrors(['reason' => 'Only active appointments can be cancelled.']);
+        }
+
         $appointment->update([
             'status' => 'cancelled',
-            'reason' => 'Cancelled by patient.',
+            'reason' => trim($validated['reason']),
         ]);
 
         AuditLog::record($request->user(), 'appointment.cancelled_by_patient', $appointment);

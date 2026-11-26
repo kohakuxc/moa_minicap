@@ -138,7 +138,6 @@
     <section class="modal" role="dialog" aria-modal="true" style="max-width: 480px; width: 100%; border-radius: 12px; padding: 28px;">
         <button class="modal-close" type="button" onclick="document.getElementById('add-staff-modal').hidden = true;" aria-label="Close dialog">×</button>
         <div style="margin-bottom: 20px;">
-            <div class="eyebrow" style="color: var(--moa-bronze);">CLINIC GOVERNANCE</div>
             <h2 style="font-size: 22px; margin: 4px 0 0;">Add new staff or admin</h2>
             <p style="font-size: 13px; color: var(--moa-slate); margin: 4px 0 0;">Provision account credentials and allocate clinic authorization.</p>
         </div>
@@ -194,7 +193,6 @@
     <section class="modal" role="dialog" aria-modal="true" style="max-width: 480px; width: 100%; border-radius: 12px; padding: 28px;">
         <button class="modal-close" type="button" onclick="document.getElementById('edit-staff-modal').hidden = true;" aria-label="Close dialog">×</button>
         <div style="margin-bottom: 20px;">
-            <div class="eyebrow" style="color: var(--moa-bronze);">MODIFY CREDENTIALS</div>
             <h2 style="font-size: 22px; margin: 4px 0 0;" id="edit-modal-title">Edit staff member</h2>
             <p style="font-size: 13px; color: var(--moa-slate); margin: 4px 0 0;">Update contact information, reassign role, or reset password.</p>
         </div>

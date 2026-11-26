@@ -17,9 +17,12 @@
 
 <body>
     <div class="app-shell">
+        @if(auth()->check() && ! auth()->user()->isStaff())
+            @include('partials.patient-topbar')
+        @else
         <div class="site-header">
             <a class="brand"
-                href="{{ auth()->check() ? (auth()->user()->isStaff() ? route('admin.dashboard', [], false) : route('dashboard', [], false)) : '#home' }}"
+                href="{{ auth()->check() ? (auth()->user()->isStaff() ? route('admin.dashboard', [], false) : '#home') : '#home' }}"
                 aria-label="MOA home">
                 <span class="brand-mark"><i></i><i></i></span>
                 <span>MOA</span>
@@ -31,14 +34,26 @@
                 <a href="#about">Our story</a>
             </nav>
             <div class="header-actions">
-                <button class="text-button" data-open-auth>Log in</button>
-                <button class="button button-teal button-small" data-open-booking>Book an appointment
-                    <span>↗</span></button>
+                @auth
+                    <a class="text-button" href="{{ auth()->user()->isStaff() ? route('admin.dashboard', [], false) : route('dashboard', [], false) }}">{{ auth()->user()->isStaff() ? 'Dashboard' : 'My Account' }}</a>
+                    @if(auth()->user()->isStaff())
+                        <button class="button button-teal button-small" data-open-booking>Book an appointment
+                            <span>↗</span></button>
+                    @else
+                        <a class="button button-teal button-small" href="{{ route('patient.appointments.create', [], false) }}">Book an appointment
+                            <span>↗</span></a>
+                    @endif
+                @else
+                    <button class="text-button" data-open-auth>Log in</button>
+                    <button class="button button-teal button-small" data-open-booking>Book an appointment
+                        <span>↗</span></button>
+                @endauth
             </div>
             <button class="menu-button" type="button" data-menu-toggle aria-expanded="false"
                 aria-controls="main-navigation" aria-label="Open menu"><span class="menu-icon"
                     aria-hidden="true"><i></i><i></i><i></i></span></button>
         </div>
+        @endif
 
         <main>
             <section class="hero" id="home">
@@ -161,13 +176,12 @@
                 <div class="quote-mark">“</div>
                 <blockquote>MOA made eye care feel less clinical and a lot more <em>like me.</em></blockquote>
                 <div class="quote-author"><span class="author-avatar">JM</span>
-                    <div><strong>Johnmar Manalo</strong><small>MOA patient since 2019</small></div><span
-                        class="quote-arrows">← &nbsp; 01 / 03 &nbsp; →</span>
+                    <div><strong>Johnmar Manalo</strong><small>MOA patient since 2019</small></div>
                 </div>
             </section>
         </main>
         <footer><a class="brand"
-                href="{{ auth()->check() ? (auth()->user()->isStaff() ? route('admin.dashboard', [], false) : route('dashboard', [], false)) : '#home' }}"><span
+                href="{{ auth()->check() ? (auth()->user()->isStaff() ? route('admin.dashboard', [], false) : '#home') : '#home' }}"><span
                     class="brand-mark"><i></i><i></i></span><span>MOA</span></a><span>© {{ date('Y') }} MOA Optical
                 Clinic. See beautifully.</span><span>COA · Quezon City</span></footer>
     </div>
@@ -181,14 +195,10 @@
                     <b>Care</b></span><span class="step">03 <b>Account</b></span></div>
             <form id="booking-form">
                 <div class="booking-step active-step" data-step="1"><label>Choose your date and time</label>
-                    <div class="date-options"><button type="button" class="date selected"
-                            data-date="2026-11-24"><b>Tue</b><strong>24</strong><small>Nov</small></button><button
-                            type="button" class="date"
-                            data-date="2026-11-25"><b>Wed</b><strong>25</strong><small>Nov</small></button><button
-                            type="button" class="date"
-                            data-date="2026-11-26"><b>Thu</b><strong>26</strong><small>Nov</small></button><button
-                            type="button" class="date"
-                            data-date="2026-11-27"><b>Fri</b><strong>27</strong><small>Nov</small></button></div>
+                    @php($bookingDays = \App\Support\BookingRules::days())
+                    <p class="date-rules-note" style="font-size:12px;margin:0 0 10px;opacity:.75;">Appointments open {{ \App\Support\BookingRules::LEAD_DAYS }} days ahead for a {{ \App\Support\BookingRules::WINDOW_DAYS }}-day window, max {{ \App\Support\BookingRules::DAILY_LIMIT }} per day. Tap a date to see its availability.</p>
+                    <div class="date-options">@foreach($bookingDays as $day)<button type="button" class="date {{ $day['available'] ? '' : 'unavailable' }}" data-date="{{ $day['date'] }}" data-reason="{{ $day['reason'] }}"><b>{{ $day['weekday'] }}</b><strong>{{ $day['day'] }}</strong><small>{{ $day['month'] }}</small></button>@endforeach</div>
+                    <p class="date-reason" data-date-reason role="alert" hidden></p>
                     <div class="times"><button type="button" class="time selected" data-time="09:00">9:00
                             AM</button><button type="button" class="time" data-time="10:30">10:30 AM</button><button
                             type="button" class="time" data-time="13:00">1:00 PM</button><button type="button"
@@ -212,6 +222,17 @@
                         hidden>Back</button><button type="button" class="button button-teal" data-next>Continue</button>
                 </div>
             </form>
+            <div class="replace-panel" data-replace-panel hidden>
+                <h3>One appointment per account</h3>
+                <p data-replace-policy></p>
+                <p class="replace-current"><strong>Your current appointment:</strong><br><span data-replace-current></span></p>
+                <label>Reason for cancelling your current appointment
+                    <textarea rows="3" maxlength="500" data-replace-reason placeholder="e.g. I need a different date"></textarea>
+                </label>
+                <label class="check-row"><input type="checkbox" data-replace-agree> I understand the policy and agree to cancel my previous appointment to book this new one.</label>
+                <p class="date-reason" data-replace-error role="alert" hidden></p>
+                <div class="form-actions"><button type="button" class="button button-quiet" data-replace-keep>Keep my current appointment</button><button type="button" class="button button-teal" data-replace-confirm>Cancel previous &amp; book new</button></div>
+            </div>
             <div class="booking-success" hidden>
                 <div class="success-icon">✓</div>
                 <h3>You’re all booked.</h3>
@@ -257,6 +278,7 @@
             </div>
         </div>
     </div>
+    @if(auth()->check() && ! auth()->user()->isStaff())@include('partials.patient-logout', ['bindMenu' => false])@endif
 </body>
 
 </html>

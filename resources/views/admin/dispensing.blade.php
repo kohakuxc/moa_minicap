@@ -168,7 +168,6 @@
     <section class="admin-panel" style="margin-top: 0;">
         <div class="admin-section-head">
             <div>
-                <div class="eyebrow" style="color: var(--moa-bronze);"></div>
                 <h2>Optical frames inventory</h2>
                 <p>Register new optical frame SKUs and adjust stock levels.</p>
             </div>

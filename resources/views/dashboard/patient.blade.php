@@ -35,7 +35,6 @@
             <section class="dashboard-card appointment-card">
                 <div class="card-heading"><span class="module-number">01</span>
                     <div>
-                        <div class="eyebrow">BOOKING</div>
                         <h2>Request an appointment</h2>
                     </div>
                 </div>
@@ -60,7 +59,6 @@
             <section class="dashboard-card eyewear-card">
                 <div class="card-heading"><span class="module-number">02</span>
                     <div>
-                        <div class="eyebrow">PREFERENCES</div>
                         <h2>Choose your eyewear</h2>
                     </div>
                 </div>
@@ -76,7 +74,6 @@
             <section class="dashboard-card service-card">
                 <div class="card-heading"><span class="module-number">03</span>
                     <div>
-                        <div class="eyebrow">CARE SERVICES</div>
                         <h2>Check up with the doctor</h2>
                     </div>
                 </div>
