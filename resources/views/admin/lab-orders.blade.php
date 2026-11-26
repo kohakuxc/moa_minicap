@@ -5,7 +5,6 @@
 @section('content')
 <div class="admin-page-head">
     <div>
-        <div class="eyebrow" style="color: var(--moa-bronze);"></div>
         <h1>Optical lab <em>fabrication pipeline.</em></h1>
         <p>Monitor prescription lens surfacing, beveling, coating, quality checks, and dispensing handoffs.</p>
     </div>

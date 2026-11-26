@@ -5,7 +5,6 @@
 @section('content')
 <div class="patient-page-head">
     <div>
-        <div class="eyebrow" style="color: var(--moa-bronze);">CARE ARCHIVE</div>
         <h1>Visit history & <em>reimbursement receipts.</em></h1>
         <p>A complete record of your previous optical examinations, itemized billing receipts for HMO claims, and one-click annual exam rebooking.</p>
     </div>

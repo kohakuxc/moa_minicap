@@ -14,6 +14,7 @@ use App\Models\LabOrder;
 use App\Models\Prescription;
 use App\Models\QueueTicket;
 use App\Models\User;
+use App\Support\BookingRules;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -109,8 +110,9 @@ class AdminController extends Controller
             'reason' => ['nullable', 'string', 'max:1000'],
         ]);
 
-        if (in_array($validated['status'], ['rejected', 'cancelled', 'rescheduled'], true) && blank($validated['reason'])) {
-            return back()->withErrors(['reason' => 'A reason is required for this status change.']);
+        if (in_array($validated['status'], ['rejected', 'cancelled', 'rescheduled'], true)
+            && mb_strlen(trim((string) ($validated['reason'] ?? ''))) < BookingRules::CANCELLATION_REASON_MIN) {
+            return back()->withErrors(['reason' => 'A reason (at least '.BookingRules::CANCELLATION_REASON_MIN.' characters) is required to cancel, reject or reschedule an appointment.']);
         }
 
         $appointment->update(array_filter([

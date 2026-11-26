@@ -23,11 +23,21 @@
         </div>
     @endif
 
+    @if($activeAppointment)
+        <div class="portal-feedback" role="note" style="border-left: 4px solid var(--moa-bronze, #b7772f); background: rgba(240, 186, 127, 0.18); color: #6b4a1f; margin-bottom: 20px;">
+            <strong><i class="bx bx-info-circle"></i> You already have an appointment.</strong><br>
+            {{ $activeAppointment->service }} on {{ $activeAppointment->starts_at->format('l, F j, Y \a\t g:i A') }}.
+            {{ \App\Support\BookingRules::oneAppointmentPolicy() }}
+            If you continue, you'll be asked to confirm and give a reason for cancelling it.
+        </div>
+    @endif
+
     <div class="split-page-grid" style="grid-template-columns: 2fr 1.2fr; gap: 32px;">
         <section class="portal-panel booking-panel" style="padding: 28px;">
             <form method="POST" action="{{ route('appointments.store', [], false) }}" data-booking-form style="display: flex; flex-direction: column; gap: 20px;">
                 @csrf
-
+                <input type="hidden" name="replace_existing" value="0" data-replace-flag>
+                <input type="hidden" name="cancellation_reason" value="" data-replace-reason-field>
                 <!-- Section 1: Service & Specialist -->
                 <div>
                     <div style="font-weight: 700; font-size: 14px; color: var(--moa-bronze); margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
@@ -64,20 +74,40 @@
                         <span>2.</span> CHOOSE DATE & REAL-TIME SLOT
                     </div>
 
-                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
-                        <label style="display: flex; flex-direction: column; gap: 5px; font-weight: 600; font-size: 13px;">
-                             <span class="required">Date</span>
-                            <input type="date" name="appointment_date" min="{{ now()->toDateString() }}" required data-slot-date style="padding: 10px; border: 1px solid #D5CBC0; border-radius: 6px;">
-                        </label>
-
-                        <label style="display: flex; flex-direction: column; gap: 5px; font-weight: 600; font-size: 13px;">
-                             <span class="required">Available Time</span>
-                            <select name="starts_at" required data-slot-select disabled style="padding: 10px; border: 1px solid #D5CBC0; border-radius: 6px;">
-                                <option>Select a date first</option>
-                            </select>
-                        </label>
+                    @php($bookingDays = \App\Support\BookingRules::days())
+                    <style>
+                        .day-picker { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; }
+                        .day-card { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 10px 4px; border: 1px solid #D5CBC0; border-radius: 8px; background: #fff; cursor: pointer; font: inherit; color: inherit; }
+                        .day-card b { font-size: 11px; font-weight: 600; text-transform: uppercase; color: #7a7064; }
+                        .day-card strong { font-size: 18px; }
+                        .day-card small { font-size: 11px; color: #7a7064; }
+                        .day-card:hover:not(.unavailable) { border-color: var(--moa-teal, #3b6bd6); }
+                        .day-card.selected { background: var(--moa-teal, #3b6bd6); border-color: var(--moa-teal, #3b6bd6); color: #fff; }
+                        .day-card.selected b, .day-card.selected small { color: #fff; }
+                        .day-card.unavailable { background: #f3efe9; opacity: .6; }
+                        .day-card.unavailable.focused { opacity: 1; border-color: #C53030; }
+                        @media (max-width: 640px) { .day-picker { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+                    </style>
+                    <div style="display: flex; flex-direction: column; gap: 6px; font-weight: 600; font-size: 13px; margin-bottom: 14px;">
+                        <span class="required">Date</span>
+                        <small style="font-weight: 400; color: #7a7064;">Appointments open {{ \App\Support\BookingRules::LEAD_DAYS }} days from today, for a {{ \App\Support\BookingRules::WINDOW_DAYS }}-day window, with a maximum of {{ \App\Support\BookingRules::DAILY_LIMIT }} appointments per day. Tap any date to see its availability.</small>
+                        <div class="day-picker" role="group" aria-label="Choose an appointment date">
+                            @foreach($bookingDays as $day)
+                                <button type="button" class="day-card {{ $day['available'] ? '' : 'unavailable' }}" data-day="{{ $day['date'] }}" data-reason="{{ $day['reason'] }}">
+                                    <b>{{ $day['weekday'] }}</b><strong>{{ $day['day'] }}</strong><small>{{ $day['month'] }}</small>
+                                </button>
+                            @endforeach
+                        </div>
+                        <input type="hidden" name="appointment_date" data-slot-date>
                     </div>
-                    <p class="auth-error" data-slot-error hidden role="alert" style="color: #C53030; font-size: 12px; margin-top: 6px;"></p>
+
+                    <label style="display: flex; flex-direction: column; gap: 5px; font-weight: 600; font-size: 13px;">
+                        <span class="required">Available Time</span>
+                        <select name="starts_at" required data-slot-select disabled style="padding: 10px; border: 1px solid #D5CBC0; border-radius: 6px;">
+                            <option>Select a date first</option>
+                        </select>
+                    </label>
+                    <p class="auth-error" data-slot-error hidden role="alert" style="color: #C53030; font-size: 13px; margin-top: 8px;"></p>
                 </div>
 
                 <!-- Section 3: Digital Pre-Visit Health Intake -->
@@ -161,6 +191,34 @@
     </div>
 @endsection
 
+@if($activeAppointment)
+@push('modals')
+<div class="modal-backdrop logout-modal-backdrop" data-replace-modal hidden>
+    <section class="modal logout-modal" role="dialog" aria-modal="true" aria-labelledby="replace-title" style="max-width: 520px;">
+        <button class="modal-close" type="button" data-replace-close aria-label="Close">×</button>
+        <h2 id="replace-title">One appointment per account</h2>
+        <p>{{ \App\Support\BookingRules::oneAppointmentPolicy() }}</p>
+        <p style="background: #f6f1ea; border-radius: 8px; padding: 10px 12px; font-size: 14px;">
+            <strong>Your current appointment:</strong><br>
+            {{ $activeAppointment->service }} · {{ $activeAppointment->starts_at->format('l, F j, Y \a\t g:i A') }}
+        </p>
+        <label style="display: flex; flex-direction: column; gap: 5px; font-weight: 600; font-size: 13px; text-align: left;">
+            Reason for cancelling your current appointment
+            <textarea rows="3" maxlength="500" data-replace-reason placeholder="e.g. I need a different date" style="padding: 10px; border: 1px solid #D5CBC0; border-radius: 6px; font: inherit;"></textarea>
+        </label>
+        <label style="display: flex; gap: 8px; align-items: flex-start; font-size: 13px; margin-top: 12px; text-align: left;">
+            <input type="checkbox" data-replace-agree style="margin-top: 3px;">
+            <span>I understand the policy and agree to cancel my previous appointment in order to book this new one.</span>
+        </label>
+        <p class="auth-error" data-replace-error hidden role="alert" style="color: #C53030; font-size: 13px; margin: 10px 0 0;"></p>
+        <div class="logout-actions">
+            <button class="button button-quiet" type="button" data-replace-close>Keep my current appointment</button>
+            <button class="button button-dark" type="button" data-replace-confirm>Cancel previous &amp; book new</button>
+        </div>
+    </section>
+</div>
+@endpush
+@endif
 @push('scripts')
 <script>
 const bookingForm = document.querySelector('[data-booking-form]');
@@ -197,7 +255,7 @@ async function loadSlots() {
         select.removeAttribute('aria-busy');
 
         if (!data.data.length) {
-            error.textContent = 'There are no open doctor times on this date. Please choose another weekday.';
+            error.textContent = data.reason || 'There are no open times on this date. Please choose another date.';
             error.hidden = false;
         }
     } catch (errorValue) {
@@ -208,13 +266,70 @@ async function loadSlots() {
     }
 }
 
-dateInput?.addEventListener('change', loadSlots);
+document.querySelectorAll('.day-card').forEach((card) => card.addEventListener('click', () => {
+    const select = document.querySelector('[data-slot-select]');
+    const error = document.querySelector('[data-slot-error]');
+    document.querySelectorAll('.day-card').forEach((item) => item.classList.remove('selected', 'focused'));
+
+    if (card.dataset.reason) {
+        // Blocked date: explain why instead of selecting it.
+        card.classList.add('focused');
+        dateInput.value = '';
+        select.innerHTML = '<option>Select an available date first</option>';
+        select.disabled = true;
+        error.textContent = card.dataset.reason;
+        error.hidden = false;
+        return;
+    }
+
+    card.classList.add('selected');
+    dateInput.value = card.dataset.day;
+    loadSlots();
+}));
 doctorSelect?.addEventListener('change', loadSlots);
 
-bookingForm?.addEventListener('submit', () => {
+bookingForm?.addEventListener('submit', (event) => {
+    const flag = document.querySelector('[data-replace-flag]');
+    const modal = document.querySelector('[data-replace-modal]');
+    if (modal && flag.value !== '1') {
+        // Existing appointment: show the one-appointment policy and ask for agreement + reason first.
+        event.preventDefault();
+        modal.hidden = false;
+        modal.querySelector('[data-replace-reason]')?.focus();
+        return;
+    }
     submitButton.disabled = true;
     submitButton.setAttribute('aria-busy', 'true');
-    submitButton.firstChild.textContent = 'Submitting intake & booking…';
+    submitButton.firstChild.textContent = '';
 });
+
+(() => {
+    const modal = document.querySelector('[data-replace-modal]');
+    if (!modal) return;
+    const error = modal.querySelector('[data-replace-error]');
+    const close = () => { modal.hidden = true; error.hidden = true; };
+    modal.querySelectorAll('[data-replace-close]').forEach((btn) => btn.addEventListener('click', close));
+    modal.addEventListener('click', (event) => { if (event.target === modal) close(); });
+    modal.querySelector('[data-replace-confirm]').addEventListener('click', () => {
+        const reason = modal.querySelector('[data-replace-reason]').value.trim();
+        if (!modal.querySelector('[data-replace-agree]').checked) {
+            error.textContent = 'Please tick the box to confirm you agree to cancel your previous appointment.';
+            error.hidden = false;
+            return;
+        }
+        if (reason.length < {{ \App\Support\BookingRules::CANCELLATION_REASON_MIN }}) {
+            error.textContent = 'Please give a reason for cancelling (at least {{ \App\Support\BookingRules::CANCELLATION_REASON_MIN }} characters).';
+            error.hidden = false;
+            return;
+        }
+        document.querySelector('[data-replace-flag]').value = '1';
+        document.querySelector('[data-replace-reason-field]').value = reason;
+        modal.hidden = true;
+        bookingForm.requestSubmit(submitButton);
+    });
+    @if(session('existing_appointment'))
+        modal.hidden = false;
+    @endif
+})();
 </script>
 @endpush
