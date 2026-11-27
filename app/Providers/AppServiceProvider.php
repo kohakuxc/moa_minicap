@@ -16,6 +16,7 @@ use App\Policies\InventoryPolicy;
 use App\Policies\LabOrderPolicy;
 use App\Policies\PrescriptionPolicy;
 use App\Policies\QueuePolicy;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -34,6 +35,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Paginator::useBootstrapFour();
+
         // Role Gates
         Gate::define('admin', fn (User $user): bool => $user->isAdmin());
         Gate::define('doctor', fn (User $user): bool => $user->isDoctor());

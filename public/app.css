@@ -3111,6 +3111,7 @@ body {
 }
 .admin-content .pagination {
     display: flex;
+    flex-wrap: wrap;
     gap: 6px;
     margin: 20px 0 0;
     padding: 0;
@@ -3122,9 +3123,26 @@ body {
     display: block;
     border: 1px solid var(--line);
     border-radius: var(--portal-inner-radius);
-    padding: 6px 9px;
+    padding: 6px 10px;
     color: var(--bronze);
-    font-size: 10px;
+    font-size: 11px;
+    line-height: 1.2;
+}
+.admin-content .pagination .page-item.active .page-link {
+    background: var(--moa-teal, #64bcb4);
+    border-color: var(--moa-teal, #64bcb4);
+    color: #fff;
+    font-weight: 700;
+}
+.admin-content .pagination .page-item.disabled .page-link {
+    opacity: 0.45;
+    cursor: default;
+}
+nav[aria-label*="Pagination"] svg {
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    vertical-align: middle;
 }
 @media (max-width: 1100px) {
     .admin-appointment {
