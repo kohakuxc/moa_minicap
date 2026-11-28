@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
@@ -63,31 +62,16 @@ class AuthController extends Controller
 
         Auth::login($user);
         $request->session()->regenerate();
-
-        $mailSent = true;
-        try {
-            $user->sendEmailVerificationNotification();
-        } catch (\Throwable $e) {
-            $mailSent = false;
-            Log::warning('Failed to send verification email on registration.', [
-                'user_id' => $user->id,
-                'error' => $e->getMessage(),
-            ]);
-        }
-
-        $message = $mailSent
-            ? 'Your account has been created.'
-            : 'Your account has been created, but we could not send the verification email yet. Try resending below.';
+        $user->sendEmailVerificationNotification();
 
         $response = [
-            'message' => $message,
-            'mail_sent' => $mailSent,
+            'message' => 'Your account has been created.',
             'user' => $user->only(['id', 'name', 'email', 'phone']),
         ];
 
         return $request->expectsJson()
             ? response()->json($response, 201)
-            : redirect('/email/verify')->with($mailSent ? 'success' : 'warning', $message);
+            : redirect('/email/verify')->with('success', $response['message']);
     }
 
     public function login(Request $request): JsonResponse
@@ -146,19 +130,7 @@ class AuthController extends Controller
     public function sendVerification(Request $request): JsonResponse
     {
         abort_if($request->user()->hasVerifiedEmail(), 400, 'Email is already verified.');
-
-        try {
-            $request->user()->sendEmailVerificationNotification();
-        } catch (\Throwable $e) {
-            Log::error('Failed to resend verification email.', [
-                'user_id' => $request->user()->id,
-                'error' => $e->getMessage(),
-            ]);
-
-            return response()->json([
-                'message' => 'We could not send the verification email right now. Please try again later or contact clinic support.',
-            ], 503);
-        }
+        $request->user()->sendEmailVerificationNotification();
 
         return response()->json(['message' => 'Verification email sent.']);
     }
@@ -172,20 +144,7 @@ class AuthController extends Controller
 
         if (! RateLimiter::tooManyAttempts($key, 3)) {
             RateLimiter::hit($key, 900);
-            try {
-                Password::sendResetLink(['email' => $email]);
-            } catch (\Throwable $e) {
-                Log::error('Failed to send password reset email.', [
-                    'email' => $email,
-                    'error' => $e->getMessage(),
-                ]);
-
-                $errorMsg = 'We could not send the reset email right now. Please try again later.';
-
-                return $request->expectsJson()
-                    ? response()->json(['message' => $errorMsg], 503)
-                    : back()->withErrors(['email' => $errorMsg]);
-            }
+            Password::sendResetLink(['email' => $email]);
         }
 
         return $request->expectsJson()
@@ -207,14 +166,7 @@ class AuthController extends Controller
         $status = Password::reset($validated, function (User $user, string $password): void {
             $user->forceFill(['password' => Hash::make($password)])->save();
             DB::table('sessions')->where('user_id', $user->id)->delete();
-            try {
-                $user->notify(new PasswordChangedNotification());
-            } catch (\Throwable $e) {
-                Log::warning('Failed to send password changed notification.', [
-                    'user_id' => $user->id,
-                    'error' => $e->getMessage(),
-                ]);
-            }
+            $user->notify(new PasswordChangedNotification());
         });
 
         if ($status !== Password::PASSWORD_RESET) {
