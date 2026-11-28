@@ -24,6 +24,18 @@ return [
 
     'brevo' => [
         'key' => env('BREVO_API_KEY'),
+        'sms_sender' => env('BREVO_SMS_SENDER', 'MOAClinic'),
+        'sms_endpoint' => env('BREVO_SMS_ENDPOINT', 'https://api.brevo.com/v3/transactionalSMS/sms'),
+    ],
+
+    'sms' => [
+        'driver' => env('SMS_DRIVER', 'auto'),
+    ],
+
+    'turnstile' => [
+        'site_key' => env('TURNSTILE_SITE_KEY'),
+        'secret_key' => env('TURNSTILE_SECRET_KEY'),
+        'enabled' => filter_var(env('TURNSTILE_ENABLED', false), FILTER_VALIDATE_BOOL),
     ],
 
     'ses' => [

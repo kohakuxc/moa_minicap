@@ -12,7 +12,6 @@ use App\Http\Controllers\PatientController;
 use App\Http\Controllers\QueueController;
 use App\Http\Controllers\SchedulingController;
 use App\Http\Controllers\StaffManagementController;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 
@@ -26,6 +25,24 @@ Route::get('/register', [AuthController::class, 'showRegister'])->middleware('gu
 Route::post('/auth/register', [AuthController::class, 'register'])
     ->middleware('guest')
     ->name('auth.register');
+Route::get('/register/verify', [AuthController::class, 'showPendingVerification'])
+    ->middleware('guest')
+    ->name('registration.verify.notice');
+Route::get('/register/verify-email/{token}/{emailToken}', [AuthController::class, 'verifyPendingEmail'])
+    ->middleware(['guest', 'signed', 'throttle:10,1'])
+    ->name('registration.verify-email');
+Route::post('/register/verify-otp', [AuthController::class, 'verifyPendingOtp'])
+    ->middleware(['guest', 'throttle:10,1'])
+    ->name('registration.verify-otp');
+Route::post('/register/resend-otp', [AuthController::class, 'resendPendingOtp'])
+    ->middleware(['guest', 'throttle:6,1'])
+    ->name('registration.resend-otp');
+Route::post('/register/resend-email', [AuthController::class, 'resendPendingEmail'])
+    ->middleware(['guest', 'throttle:6,1'])
+    ->name('registration.resend-email');
+Route::post('/register/cancel', [AuthController::class, 'cancelPendingRegistration'])
+    ->middleware('guest')
+    ->name('registration.cancel');
 Route::post('/auth/login', [AuthController::class, 'login'])
     ->middleware('guest')
     ->name('auth.login');
@@ -42,13 +59,8 @@ Route::post('/auth/reset-password', [AuthController::class, 'resetPassword'])
     ->name('password.update');
 Route::get('/email/verify', fn () => view('auth.verify-email'))
     ->middleware('auth')->name('verification.notice');
-Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-    $request->fulfill();
-    return redirect()->route($request->user()->profile_completed_at ? 'dashboard' : 'profile.create')
-        ->with('success', $request->user()->profile_completed_at
-            ? 'Email verified.'
-            : 'Email verified. Please complete your profile.');
-})->middleware(['auth', 'signed', 'throttle:6,1'])->name('verification.verify');
+Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])
+    ->middleware(['signed', 'throttle:6,1'])->name('verification.verify');
 Route::post('/email/verification-notification', [AuthController::class, 'sendVerification'])
     ->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 

@@ -53,7 +53,10 @@ class QueueController extends Controller
             ->get();
 
         $services = ClinicService::where('is_active', true)->orderBy('name')->get();
-        $patients = User::where('role', User::ROLE_PATIENT)->orderBy('name')->get(['id', 'name', 'phone']);
+        $patients = User::where('role', User::ROLE_PATIENT)
+            ->whereNotNull('email_verified_at')
+            ->orderBy('name')
+            ->get(['id', 'name', 'phone']);
 
         return view('admin.queue', [
             'waitingTickets' => $waitingTickets,

@@ -18,11 +18,13 @@
 		</div>
 		<h1>{{ ($editing ?? false) ? 'My profile.' : 'Complete your profile.' }}</h1>
 		<p class="profile-intro">{{ ($editing ?? false) ? 'Keep your contact details up to date so your care team can reach you.' : 'Add your details once so your care team can keep your appointments and records accurate.' }}</p>
+		@if(session('success'))<p class="success-message">{{ session('success') }}</p>@endif
 		<form class="profile-form" method="POST" action="{{ route('profile.update', [], false) }}">
 			@csrf
 			@method('PATCH')
 			<div class="profile-form-grid">
 				<label>Full name<input name="name" value="{{ old('name', $user->name) }}" autocomplete="name" required>@error('name')<span class="auth-error">{{ $message }}</span>@enderror</label>
+				<label>Date of birth<input name="date_of_birth" type="date" value="{{ old('date_of_birth', optional($user->date_of_birth)->format('Y-m-d')) }}" max="{{ now()->subDay()->toDateString() }}" min="1900-01-01" autocomplete="bday" required>@error('date_of_birth')<span class="auth-error">{{ $message }}</span>@enderror</label>
 				<label>Email address<input name="email" type="email" value="{{ old('email', $user->email) }}" autocomplete="email" required>@error('email')<span class="auth-error">{{ $message }}</span>@enderror</label>
 				<label>Phone number<input name="phone" value="{{ old('phone', $user->phone) }}" autocomplete="tel" required>@error('phone')<span class="auth-error">{{ $message }}</span>@enderror</label>
 			</div>

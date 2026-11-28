@@ -2,36 +2,43 @@
 
 namespace Tests\Feature;
 
+use App\Models\PendingRegistration;
 use App\Models\User;
 use App\Models\DoctorAvailability;
+use App\Notifications\PendingRegistrationVerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Notifications\AnonymousNotifiable;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\URL;
 use Tests\TestCase;
 
 class AuthenticationAndAuthorizationTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_patient_can_register_and_password_is_hashed(): void
+    public function test_patient_can_register_and_password_is_hashed_in_pending_registration(): void
     {
         Notification::fake();
 
         $response = $this->postJson('/auth/register', [
             'name' => 'Jane Patient',
+            'date_of_birth' => '1995-04-12',
             'email' => 'jane@example.com',
-            'phone' => '555-0100',
+            'phone' => '0917-555-0100',
             'password' => 'Password123!',
             'password_confirmation' => 'Password123!',
             'terms' => '1',
         ]);
 
-        $response->assertCreated();
-        $this->assertAuthenticated();
-        $user = User::where('email', 'jane@example.com')->firstOrFail();
-        $this->assertSame('patient', $user->role);
-        $this->assertTrue(Hash::check('Password123!', $user->password));
-        Notification::assertSentTo($user, \Illuminate\Auth\Notifications\VerifyEmail::class);
+        $response->assertStatus(202);
+        $this->assertGuest();
+        $this->assertDatabaseMissing('users', ['email' => 'jane@example.com']);
+
+        $pending = PendingRegistration::where('email', 'jane@example.com')->firstOrFail();
+        $this->assertSame('+639175550100', $pending->phone);
+        $this->assertTrue(Hash::check('Password123!', $pending->password));
+        Notification::assertSentTo(new AnonymousNotifiable, PendingRegistrationVerifyEmail::class);
     }
 
     public function test_registration_succeeds_gracefully_when_verification_email_fails(): void
@@ -42,17 +49,19 @@ class AuthenticationAndAuthorizationTest extends TestCase
 
         $response = $this->post('/auth/register', [
             'name' => 'Grace Patient',
+            'date_of_birth' => '1994-03-10',
             'email' => 'grace@example.com',
-            'phone' => '555-0199',
+            'phone' => '0917-555-0199',
             'password' => 'Password123!',
             'password_confirmation' => 'Password123!',
             'terms' => '1',
         ]);
 
-        $response->assertRedirect('/email/verify');
+        $response->assertRedirect(route('registration.verify.notice'));
         $response->assertSessionHas('warning');
-        $this->assertAuthenticated();
-        $this->assertDatabaseHas('users', ['email' => 'grace@example.com']);
+        $this->assertGuest();
+        $this->assertDatabaseHas('pending_registrations', ['email' => 'grace@example.com']);
+        $this->assertDatabaseMissing('users', ['email' => 'grace@example.com']);
     }
 
     public function test_resend_verification_returns_503_when_mailer_fails(): void
@@ -67,6 +76,64 @@ class AuthenticationAndAuthorizationTest extends TestCase
             ->postJson('/email/verification-notification')
             ->assertStatus(503)
             ->assertJsonStructure(['message']);
+    }
+
+    public function test_clicking_verification_link_while_logged_out_verifies_logs_in_and_redirects_to_profile(): void
+    {
+        $user = User::factory()->unverified()->create([
+            'profile_completed_at' => null,
+        ]);
+
+        $verificationUrl = URL::temporarySignedRoute(
+            'verification.verify',
+            now()->addMinutes(60),
+            ['id' => $user->id, 'hash' => sha1($user->getEmailForVerification())]
+        );
+
+        $response = $this->get($verificationUrl);
+
+        $response->assertRedirect(route('profile.create'));
+        $this->assertAuthenticatedAs($user);
+        $this->assertTrue($user->fresh()->hasVerifiedEmail());
+
+        $this->get('/profile/create')
+            ->assertOk()
+            ->assertSee('Complete your profile.')
+            ->assertSee('Email verified. Please complete your profile.');
+    }
+
+    public function test_clicking_verification_link_with_invalid_hash_is_forbidden(): void
+    {
+        $user = User::factory()->unverified()->create();
+
+        $invalidUrl = URL::temporarySignedRoute(
+            'verification.verify',
+            now()->addMinutes(60),
+            ['id' => $user->id, 'hash' => sha1('wrong@example.com')]
+        );
+
+        $this->get($invalidUrl)->assertForbidden();
+        $this->assertGuest();
+        $this->assertFalse($user->fresh()->hasVerifiedEmail());
+    }
+
+    public function test_different_authenticated_user_cannot_verify_another_users_link(): void
+    {
+        $otherUser = User::factory()->create();
+        $targetUser = User::factory()->unverified()->create();
+
+        $verificationUrl = URL::temporarySignedRoute(
+            'verification.verify',
+            now()->addMinutes(60),
+            ['id' => $targetUser->id, 'hash' => sha1($targetUser->getEmailForVerification())]
+        );
+
+        $this->actingAs($otherUser)
+            ->get($verificationUrl)
+            ->assertForbidden();
+
+        $this->assertAuthenticatedAs($otherUser);
+        $this->assertFalse($targetUser->fresh()->hasVerifiedEmail());
     }
 
     public function test_resend_mailer_transport_can_be_resolved(): void
@@ -139,8 +206,9 @@ class AuthenticationAndAuthorizationTest extends TestCase
 
         $this->postJson('/auth/register', [
             'name' => 'Jane Patient',
+            'date_of_birth' => '1996-05-20',
             'email' => 'jane-weak@example.com',
-            'phone' => '555-0101',
+            'phone' => '0917-555-0101',
             'password' => 'password123',
             'password_confirmation' => 'password123',
         ])->assertUnprocessable()->assertJsonValidationErrors(['password', 'terms']);
@@ -149,12 +217,13 @@ class AuthenticationAndAuthorizationTest extends TestCase
     public function test_registration_rejects_a_duplicate_mobile_number(): void
     {
         Notification::fake();
-        User::factory()->create(['phone' => '555-0102']);
+        User::factory()->create(['phone' => '+639175550102']);
 
         $this->postJson('/auth/register', [
             'name' => 'Another Patient',
+            'date_of_birth' => '1992-08-15',
             'email' => 'another@example.com',
-            'phone' => ' 555-0102 ',
+            'phone' => ' 0917-555-0102 ',
             'password' => 'Password123!',
             'password_confirmation' => 'Password123!',
             'terms' => '1',

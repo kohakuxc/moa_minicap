@@ -10,4 +10,5 @@ Artisan::command('inspire', function () {
 
 // Automated Recall & CRM: Run daily at 08:00 to flag patients due for annual exams or contact lens refills
 Schedule::command('clinic:send-recalls')->dailyAt('08:00');
+Schedule::command('registrations:prune')->hourly();
 

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\IdentityNormalizer;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -31,11 +32,33 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $fillable = [
         'name',
         'email',
+        'canonical_email',
         'phone',
+        'date_of_birth',
         'role',
         'password',
+        'email_verified_at',
+        'phone_verified_at',
         'profile_completed_at',
     ];
+
+    protected static function booted(): void
+    {
+        static::saving(function (User $user): void {
+            if (is_string($user->name)) {
+                $user->name = IdentityNormalizer::normalizeName($user->name);
+            }
+
+            if (is_string($user->email) && $user->email !== '') {
+                $user->email = IdentityNormalizer::normalizeEmail($user->email);
+                $user->canonical_email = IdentityNormalizer::canonicalEmail($user->email);
+            }
+
+            if ($user->phone !== null) {
+                $user->phone = IdentityNormalizer::normalizePhone($user->phone);
+            }
+        });
+    }
 
     /**
      * The attributes that should be hidden for serialization.
@@ -191,7 +214,9 @@ class User extends Authenticatable implements MustVerifyEmail
     protected function casts(): array
     {
         return [
+            'date_of_birth' => 'date',
             'email_verified_at' => 'datetime',
+            'phone_verified_at' => 'datetime',
             'password' => 'hashed',
             'profile_completed_at' => 'datetime',
         ];

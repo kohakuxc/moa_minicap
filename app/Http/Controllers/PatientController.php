@@ -12,10 +12,13 @@ use App\Models\Prescription;
 use App\Models\TryOnReservation;
 use App\Models\User;
 use App\Support\BookingRules;
+use App\Support\IdentityNormalizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class PatientController extends Controller
 {
@@ -230,15 +233,65 @@ class PatientController extends Controller
     {
         $user = $request->user();
         $wasCompleted = (bool) $user->profile_completed_at;
+
+        $normalizedName = IdentityNormalizer::normalizeName($request->string('name')->toString());
+        $normalizedEmail = IdentityNormalizer::normalizeEmail($request->string('email')->toString());
+        $normalizedPhone = IdentityNormalizer::normalizePhone($request->string('phone')->toString());
+
+        $request->merge([
+            'name' => $normalizedName,
+            'email' => $normalizedEmail,
+            'phone' => $normalizedPhone,
+        ]);
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:120'],
-            'phone' => ['nullable', 'string', 'max:30'],
-            'email' => ['required', 'email:rfc', 'max:255', Rule::unique('users')->ignore($user)],
+            'date_of_birth' => ['required', 'date', 'before:today', 'after:1900-01-01'],
+            'phone' => ['nullable', 'string', 'min:7', 'max:30', Rule::unique('users', 'phone')->whereNotNull('phone')->ignore($user->id)],
+            'email' => ['required', 'email:rfc', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
         ]);
+
+        $canonicalEmail = IdentityNormalizer::canonicalEmail($validated['email']);
+        $dob = date('Y-m-d', strtotime($validated['date_of_birth']));
+
+        if (User::where('canonical_email', $canonicalEmail)->where('id', '!=', $user->id)->exists()) {
+            throw ValidationException::withMessages([
+                'email' => 'An account with this email address already exists.',
+            ]);
+        }
+
+        $duplicateIdentity = User::query()
+            ->where('id', '!=', $user->id)
+            ->whereRaw('LOWER(name) = ?', [Str::lower($validated['name'])])
+            ->where(function ($query) use ($dob, $validated): void {
+                $query->whereDate('date_of_birth', $dob);
+                if (! empty($validated['phone'])) {
+                    $query->orWhere('phone', $validated['phone']);
+                }
+            })
+            ->exists();
+
+        if ($duplicateIdentity) {
+            throw ValidationException::withMessages([
+                'name' => 'Another patient account already matches this name and date of birth or mobile number. Please contact clinic support if you believe this is an error.',
+            ]);
+        }
+
         if ($validated['email'] !== $user->email) {
             $user->forceFill(['email' => $validated['email'], 'email_verified_at' => null]);
         }
-        $user->fill($validated)->forceFill(['profile_completed_at' => now()])->save();
+
+        if (($validated['phone'] ?? null) !== $user->phone) {
+            $user->forceFill(['phone_verified_at' => null]);
+        }
+
+        $user->fill([
+            'name' => $validated['name'],
+            'date_of_birth' => $dob,
+            'phone' => $validated['phone'] ?? null,
+            'email' => $validated['email'],
+            'canonical_email' => $canonicalEmail,
+        ])->forceFill(['profile_completed_at' => now()])->save();
 
         return redirect()
             ->route($wasCompleted ? 'patient.profile' : 'dashboard')
