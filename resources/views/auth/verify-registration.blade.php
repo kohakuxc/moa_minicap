@@ -36,7 +36,7 @@
                 <div style="font-weight: 600; font-size: 13px; color: #1b2b73;">{{ !empty($smsOtpEnabled) ? '1. Email verification' : 'Email verification' }}</div>
                 <div style="font-size: 12px; color: #5b6b8c;">Verification link sent to {{ $maskedEmail }}</div>
             </div>
-            <span style="font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; {{ $pending->hasVerifiedEmail() ? 'background:#e6f4f1; color:#1c6b5d;' : 'background:#eef2ff; color:#2446a8;' }}">
+            <span data-email-status-badge style="font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; {{ $pending->hasVerifiedEmail() ? 'background:#e6f4f1; color:#1c6b5d;' : 'background:#eef2ff; color:#2446a8;' }}">
                 {{ $pending->hasVerifiedEmail() ? 'Verified' : 'Pending' }}
             </span>
         </div>
@@ -47,12 +47,16 @@
                     <div style="font-weight: 600; font-size: 13px; color: #1b2b73;">2. Mobile SMS OTP</div>
                     <div style="font-size: 12px; color: #5b6b8c;">6-digit code sent to {{ $maskedPhone }}</div>
                 </div>
-                <span style="font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; {{ $pending->hasVerifiedPhone() ? 'background:#e6f4f1; color:#1c6b5d;' : 'background:#eef2ff; color:#2446a8;' }}">
+                <span data-phone-status-badge style="font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; {{ $pending->hasVerifiedPhone() ? 'background:#e6f4f1; color:#1c6b5d;' : 'background:#eef2ff; color:#2446a8;' }}">
                     {{ $pending->hasVerifiedPhone() ? 'Verified' : 'Pending' }}
                 </span>
             </div>
         @endif
     </div>
+
+    <p data-live-status-text style="font-size: 12px; color: #5b6b8c; margin: -6px 0 16px;" aria-live="polite">
+        Waiting for verification… this page will continue automatically once verified.
+    </p>
 
     @if(!empty($smsOtpEnabled) && !$pending->hasVerifiedPhone())
         <form class="auth-flow-form" method="POST" action="{{ route('registration.verify-otp') }}" style="margin-bottom: 14px;">
@@ -79,7 +83,7 @@
     @endif
 
     @if(!$pending->hasVerifiedEmail())
-        <form method="POST" action="{{ route('registration.resend-email') }}" style="margin-bottom: 10px;">
+        <form method="POST" action="{{ route('registration.resend-email') }}" style="margin-bottom: 10px;" data-resend-email-form>
             @csrf
             <input type="hidden" name="token" value="{{ $pending->token }}">
             <button
@@ -160,6 +164,75 @@
             }
         );
     }
+
+    const statusUrl = @json(route('registration.status', ['token' => $pending->token], false));
+    const emailBadge = document.querySelector('[data-email-status-badge]');
+    const phoneBadge = document.querySelector('[data-phone-status-badge]');
+    const resendEmailForm = document.querySelector('[data-resend-email-form]');
+    const liveStatusText = document.querySelector('[data-live-status-text]');
+    let pollTimer = null;
+    let checking = false;
+
+    const markBadgeVerified = (badge) => {
+        if (!badge) return;
+        badge.textContent = 'Verified';
+        badge.style.background = '#e6f4f1';
+        badge.style.color = '#1c6b5d';
+    };
+
+    const pollStatus = async () => {
+        if (checking) return;
+        checking = true;
+        try {
+            const response = await fetch(statusUrl, {
+                headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                credentials: 'same-origin',
+            });
+            if (!response.ok) return;
+            const data = await response.json();
+
+            if (data.status === 'completed' && data.redirect) {
+                if (pollTimer) window.clearInterval(pollTimer);
+                markBadgeVerified(emailBadge);
+                markBadgeVerified(phoneBadge);
+                if (liveStatusText) {
+                    liveStatusText.textContent = 'Verified! Redirecting to your account…';
+                    liveStatusText.style.color = '#1c6b5d';
+                }
+                window.location.assign(data.redirect);
+                return;
+            }
+
+            if (data.status === 'expired' && data.redirect) {
+                if (pollTimer) window.clearInterval(pollTimer);
+                window.location.assign(data.redirect);
+                return;
+            }
+
+            if (data.status === 'pending') {
+                if (data.email_verified) {
+                    markBadgeVerified(emailBadge);
+                    if (resendEmailForm) resendEmailForm.hidden = true;
+                }
+                if (data.phone_verified) {
+                    markBadgeVerified(phoneBadge);
+                }
+            }
+        } catch (_) {
+            // Ignore transient network errors and retry on next poll
+        } finally {
+            checking = false;
+        }
+    };
+
+    pollTimer = window.setInterval(() => {
+        if (!document.hidden) pollStatus();
+    }, 2500);
+
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) pollStatus();
+    });
+    window.addEventListener('focus', pollStatus);
 })();
 </script>
 @endpush

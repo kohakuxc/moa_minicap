@@ -13,6 +13,7 @@ use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -159,7 +160,11 @@ class AuthController extends Controller
             ]
         );
 
+        $desktopSecret = Str::random(40);
+        Cache::put("pending_desktop:{$pending->token}", hash('sha256', $desktopSecret), $pending->expires_at);
+
         $request->session()->put('pending_registration_token', $pending->token);
+        $request->session()->put('pending_desktop_secret', $desktopSecret);
 
         $verificationUrl = $this->pendingEmailVerificationUrl($pending, $plainEmailToken);
 
@@ -430,12 +435,83 @@ class AuthController extends Controller
     public function cancelPendingRegistration(Request $request)
     {
         if ($pending = $this->resolvePendingRegistration($request, $request->input('token'))) {
+            Cache::forget("pending_desktop:{$pending->token}");
+            Cache::forget("pending_handoff:{$pending->token}");
             $pending->delete();
         }
 
-        $request->session()->forget('pending_registration_token');
+        $request->session()->forget(['pending_registration_token', 'pending_desktop_secret']);
 
         return redirect()->route('register');
+    }
+
+    public function registrationStatus(Request $request): JsonResponse
+    {
+        if (Auth::check()) {
+            $user = $request->user();
+
+            return response()->json([
+                'status' => 'completed',
+                'redirect' => $user->isStaff()
+                    ? route('admin.dashboard', [], false)
+                    : ($user->profile_completed_at ? route('dashboard', [], false) : route('profile.create', [], false)),
+            ]);
+        }
+
+        $token = $request->query('token') ?: $request->session()->get('pending_registration_token');
+        if (! is_string($token) || trim($token) === '') {
+            return response()->json([
+                'status' => 'expired',
+                'redirect' => route('register', [], false),
+            ]);
+        }
+
+        $token = trim($token);
+        $pending = PendingRegistration::where('token', $token)->first();
+
+        if ($pending && ! $pending->isExpired()) {
+            return response()->json([
+                'status' => 'pending',
+                'email_verified' => $pending->hasVerifiedEmail(),
+                'phone_verified' => $pending->hasVerifiedPhone(),
+            ]);
+        }
+
+        if ($pending) {
+            $pending->delete();
+        }
+
+        $handoff = Cache::get("pending_handoff:{$token}");
+        $desktopSecret = (string) $request->session()->get('pending_desktop_secret', '');
+
+        if (
+            is_array($handoff)
+            && ! empty($handoff['user_id'])
+            && ! empty($handoff['secret_hash'])
+            && $desktopSecret !== ''
+            && hash_equals((string) $handoff['secret_hash'], hash('sha256', $desktopSecret))
+        ) {
+            if ($user = User::find($handoff['user_id'])) {
+                Cache::forget("pending_handoff:{$token}");
+                Auth::login($user);
+                $request->session()->regenerate();
+                $request->session()->forget(['pending_registration_token', 'pending_desktop_secret']);
+
+                return response()->json([
+                    'status' => 'completed',
+                    'redirect' => $user->profile_completed_at
+                        ? route('dashboard', [], false)
+                        : route('profile.create', [], false),
+                ]);
+            }
+        }
+
+        $request->session()->forget(['pending_registration_token', 'pending_desktop_secret']);
+
+        return response()->json([
+            'status' => 'expired',
+            'redirect' => route('register', [], false),
+        ]);
     }
 
     public function login(Request $request): JsonResponse
@@ -646,6 +722,9 @@ class AuthController extends Controller
 
     private function finalizePendingRegistration(PendingRegistration $pending, Request $request)
     {
+        $desktopSecretHash = Cache::pull("pending_desktop:{$pending->token}");
+        $pendingToken = $pending->token;
+
         $user = DB::transaction(function () use ($pending): ?User {
             $dob = $pending->date_of_birth->format('Y-m-d');
 
@@ -683,7 +762,7 @@ class AuthController extends Controller
             return $user;
         });
 
-        $request->session()->forget('pending_registration_token');
+        $request->session()->forget(['pending_registration_token', 'pending_desktop_secret']);
 
         if (! $user) {
             $msg = 'An account matching your details was already created. Please sign in or reset your password.';
@@ -691,6 +770,13 @@ class AuthController extends Controller
             return $request->expectsJson()
                 ? response()->json(['message' => $msg], 409)
                 : redirect()->route('register')->withErrors(['duplicate_account' => $msg]);
+        }
+
+        if (is_string($desktopSecretHash) && $desktopSecretHash !== '') {
+            Cache::put("pending_handoff:{$pendingToken}", [
+                'user_id' => $user->id,
+                'secret_hash' => $desktopSecretHash,
+            ], now()->addMinutes(10));
         }
 
         event(new Verified($user));
@@ -723,7 +809,7 @@ class AuthController extends Controller
             if ($pending) {
                 $pending->delete();
             }
-            $request->session()->forget('pending_registration_token');
+            $request->session()->forget(['pending_registration_token', 'pending_desktop_secret']);
 
             return null;
         }

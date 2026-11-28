@@ -43,6 +43,9 @@ Route::post('/register/resend-email', [AuthController::class, 'resendPendingEmai
 Route::post('/register/cancel', [AuthController::class, 'cancelPendingRegistration'])
     ->middleware('guest')
     ->name('registration.cancel');
+Route::get('/register/status', [AuthController::class, 'registrationStatus'])
+    ->middleware('throttle:60,1')
+    ->name('registration.status');
 Route::post('/auth/login', [AuthController::class, 'login'])
     ->middleware('guest')
     ->name('auth.login');

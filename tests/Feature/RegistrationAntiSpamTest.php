@@ -428,4 +428,81 @@ class RegistrationAntiSpamTest extends TestCase
             ])
             ->assertSessionHasErrors(['name']);
     }
+
+    public function test_cross_device_email_verification_automatically_logs_in_originating_desktop_session(): void
+    {
+        Notification::fake();
+        $capturedUrl = null;
+
+        // 1. Desktop submits registration and keeps its own session + pending_desktop_secret
+        $registerResponse = $this->post('/auth/register', [
+            'name' => 'Cross Device User',
+            'date_of_birth' => '1994-11-11',
+            'email' => 'crossdevice@example.com',
+            'phone' => '09174445555',
+            'password' => 'Password123!',
+            'password_confirmation' => 'Password123!',
+            'terms' => '1',
+        ]);
+        $registerResponse->assertRedirect(route('registration.verify.notice'))
+            ->assertSessionHas('pending_desktop_secret');
+
+        $desktopSecret = $this->app['session']->get('pending_desktop_secret');
+        $this->assertNotEmpty($desktopSecret);
+        $pending = PendingRegistration::firstOrFail();
+
+        $this->assertSame(
+            hash('sha256', $desktopSecret),
+            \Illuminate\Support\Facades\Cache::get('pending_desktop:'.$pending->token)
+        );
+
+        Notification::assertSentTo(
+            new AnonymousNotifiable,
+            PendingRegistrationVerifyEmail::class,
+            function (PendingRegistrationVerifyEmail $notification) use (&$capturedUrl): bool {
+                $capturedUrl = $notification->verificationUrl;
+
+                return true;
+            }
+        );
+
+        // Before verification, Desktop poll returns pending
+        $this->getJson('/register/status?token='.$pending->token)
+            ->assertOk()
+            ->assertJson(['status' => 'pending', 'email_verified' => false]);
+
+        // 2. Simulate Phone clicking the link with a completely separate session (logged out)
+        auth()->logout();
+        $this->flushSession();
+
+        $this->get($capturedUrl)->assertRedirect(route('profile.create'));
+        $this->assertDatabaseHas('users', ['email' => 'crossdevice@example.com']);
+
+        $handoff = \Illuminate\Support\Facades\Cache::get('pending_handoff:'.$pending->token);
+        $this->assertIsArray($handoff);
+        $this->assertSame($handoff['secret_hash'], hash('sha256', $desktopSecret));
+
+        // 3. Another random browser WITHOUT the desktop secret cannot claim the login
+        auth()->logout();
+        $this->flushSession();
+
+        $this->getJson('/register/status?token='.$pending->token)
+            ->assertOk()
+            ->assertJson(['status' => 'expired']);
+        $this->assertGuest();
+
+        // 4. Originating Desktop session (with pending_desktop_secret) polls /register/status -> auto logs in & forwards!
+        $this->withSession([
+            'pending_registration_token' => $pending->token,
+            'pending_desktop_secret' => $desktopSecret,
+        ])->getJson('/register/status?token='.$pending->token)
+            ->assertOk()
+            ->assertJson([
+                'status' => 'completed',
+                'redirect' => '/profile/create',
+            ]);
+
+        $this->assertAuthenticated();
+        $this->assertSame('crossdevice@example.com', auth()->user()->email);
+    }
 }
