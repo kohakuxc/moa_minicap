@@ -16,6 +16,57 @@ class RegistrationAntiSpamTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_default_registration_creates_user_only_after_email_verification_without_calling_sms(): void
+    {
+        Notification::fake();
+        Http::fake();
+        $capturedUrl = null;
+
+        $response = $this->post('/auth/register', [
+            'name' => 'Sofia Mercado',
+            'date_of_birth' => '1996-03-18',
+            'email' => 'sofia.mercado+test@gmail.com',
+            'phone' => '0917 888 1234',
+            'password' => 'Password123!',
+            'password_confirmation' => 'Password123!',
+            'terms' => '1',
+        ]);
+
+        $response->assertRedirect(route('registration.verify.notice'));
+        $this->assertGuest();
+        $this->assertDatabaseCount('users', 0);
+        Http::assertNothingSent();
+
+        Notification::assertSentTo(
+            new AnonymousNotifiable,
+            PendingRegistrationVerifyEmail::class,
+            function (PendingRegistrationVerifyEmail $notification) use (&$capturedUrl): bool {
+                $capturedUrl = $notification->verificationUrl;
+
+                return true;
+            }
+        );
+
+        $pending = PendingRegistration::firstOrFail();
+
+        // Notice page should not display SMS OTP section when SMS_OTP_ENABLED=false
+        $this->get('/register/verify?token='.$pending->token)
+            ->assertOk()
+            ->assertDontSee('Enter 6-digit SMS code')
+            ->assertSee('Resend email verification link');
+
+        // Clicking email link immediately creates User and logs in
+        $this->get($capturedUrl)->assertRedirect(route('profile.create'));
+        $this->assertAuthenticated();
+        $this->assertDatabaseCount('pending_registrations', 0);
+
+        $user = User::where('email', 'sofia.mercado+test@gmail.com')->firstOrFail();
+        $this->assertSame('sofiamercado@gmail.com', $user->canonical_email);
+        $this->assertSame('+639178881234', $user->phone);
+        $this->assertNotNull($user->email_verified_at);
+        $this->assertNull($user->phone_verified_at);
+    }
+
     public function test_full_registration_requires_both_email_and_sms_otp_before_creating_user(): void
     {
         Notification::fake();
@@ -33,6 +84,7 @@ class RegistrationAntiSpamTest extends TestCase
         ]);
 
         config([
+            'services.sms.otp_enabled' => true,
             'services.sms.driver' => 'brevo',
             'services.brevo.key' => 'xkeysib-test-sms',
             'services.brevo.sms_sender' => 'MOAClinic',
@@ -279,6 +331,7 @@ class RegistrationAntiSpamTest extends TestCase
         ]);
 
         config([
+            'services.sms.otp_enabled' => true,
             'services.sms.driver' => 'brevo',
             'services.brevo.key' => 'xkeysib-test-sms',
         ]);
@@ -310,7 +363,13 @@ class RegistrationAntiSpamTest extends TestCase
         $this->assertDatabaseCount('users', 0);
         $this->assertNotNull($pending->fresh()->email_verified_at);
 
-        // Cooldown prevents immediate resend
+        // Cooldown prevents immediate resend and renders live countdown attributes
+        $this->post('/register/resend-otp', ['token' => $pending->token])
+            ->assertRedirect();
+        $this->get('/register/verify?token='.$pending->token)
+            ->assertOk()
+            ->assertSee('data-resend-countdown=', false)
+            ->assertSee('data-cooldown-banner="sms"', false);
         $this->postJson('/register/resend-otp', ['token' => $pending->token])->assertStatus(429);
 
         // After 61 seconds, resend issues a fresh OTP

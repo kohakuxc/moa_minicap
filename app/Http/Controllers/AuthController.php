@@ -132,7 +132,8 @@ class AuthController extends Controller
         }
 
         $plainEmailToken = Str::random(40);
-        $otp = (string) random_int(100000, 999999);
+        $smsOtpEnabled = (bool) config('services.sms.otp_enabled', false);
+        $otp = $smsOtpEnabled ? (string) random_int(100000, 999999) : null;
         $now = now();
 
         $pending = PendingRegistration::updateOrCreate(
@@ -148,11 +149,11 @@ class AuthController extends Controller
                 'password' => Hash::make($validated['password']),
                 'email_token_hash' => hash('sha256', $plainEmailToken),
                 'email_verified_at' => null,
-                'phone_otp_hash' => Hash::make($otp),
-                'phone_otp_expires_at' => $now->copy()->addMinutes(10),
+                'phone_otp_hash' => $otp !== null ? Hash::make($otp) : '',
+                'phone_otp_expires_at' => $smsOtpEnabled ? $now->copy()->addMinutes(10) : $now,
                 'phone_otp_attempts' => 0,
                 'phone_verified_at' => null,
-                'last_sms_sent_at' => $now,
+                'last_sms_sent_at' => $smsOtpEnabled ? $now : null,
                 'last_email_sent_at' => $now,
                 'expires_at' => $now->copy()->addMinutes(60),
             ]
@@ -170,31 +171,43 @@ class AuthController extends Controller
             warning: true,
         );
 
-        $smsSent = $this->attemptSms(
-            fn () => $sms->sendOtp($pending->phone, $otp, 10),
-            'Failed to send pending registration SMS OTP.',
-            ['pending_registration_id' => $pending->id],
-        );
+        $smsSent = false;
+        if ($smsOtpEnabled && $otp !== null) {
+            $smsSent = $this->attemptSms(
+                fn () => $sms->sendOtp($pending->phone, $otp, 10),
+                'Failed to send pending registration SMS OTP.',
+                ['pending_registration_id' => $pending->id],
+            );
+        }
 
-        $message = match (true) {
-            $mailSent && $smsSent => 'Verification steps sent! Please verify both your email link and the 6-digit SMS code sent to your mobile number.',
-            ! $mailSent && $smsSent => 'SMS verification code sent, but we could not send the verification email yet. Try resending the email below.',
-            $mailSent && ! $smsSent => 'Verification email sent, but we could not send the SMS code right now. Try resending the SMS code below.',
-            default => 'Pending registration saved, but we could not send your verification email or SMS code yet. Try resending below.',
-        };
+        if ($smsOtpEnabled) {
+            $message = match (true) {
+                $mailSent && $smsSent => 'Verification steps sent! Please verify both your email link and the 6-digit SMS code sent to your mobile number.',
+                ! $mailSent && $smsSent => 'SMS verification code sent, but we could not send the verification email yet. Try resending the email below.',
+                $mailSent && ! $smsSent => 'Verification email sent, but we could not send the SMS code right now. Try resending the SMS code below.',
+                default => 'Pending registration saved, but we could not send your verification email or SMS code yet. Try resending below.',
+            };
+            $allSent = $mailSent && $smsSent;
+        } else {
+            $message = $mailSent
+                ? 'Verification link sent! Please check your email and click the verification link to activate your account.'
+                : 'Pending registration saved, but we could not send the verification email yet. Try resending below.';
+            $allSent = $mailSent;
+        }
 
         $response = [
             'message' => $message,
             'pending_token' => $pending->token,
             'mail_sent' => $mailSent,
             'sms_sent' => $smsSent,
+            'sms_otp_enabled' => $smsOtpEnabled,
             'redirect' => route('registration.verify.notice', [], false),
         ];
 
         return $request->expectsJson()
             ? response()->json($response, 202)
             : redirect()->route('registration.verify.notice')
-                ->with(($mailSent && $smsSent) ? 'success' : 'warning', $message);
+                ->with($allSent ? 'success' : 'warning', $message);
     }
 
     public function showPendingVerification(Request $request)
@@ -210,6 +223,9 @@ class AuthController extends Controller
             'pending' => $pending,
             'maskedEmail' => $this->maskEmail($pending->email),
             'maskedPhone' => $this->maskPhone($pending->phone),
+            'smsOtpEnabled' => (bool) config('services.sms.otp_enabled', false),
+            'smsCooldown' => $this->cooldownRemaining($pending->last_sms_sent_at),
+            'emailCooldown' => $this->cooldownRemaining($pending->last_email_sent_at),
         ]);
     }
 
@@ -321,13 +337,13 @@ class AuthController extends Controller
                 : back()->with('success', $msg);
         }
 
-        if ($pending->last_sms_sent_at && $pending->last_sms_sent_at->gt(now()->subSeconds(60))) {
-            $wait = (int) now()->diffInSeconds($pending->last_sms_sent_at->copy()->addSeconds(60));
-            $msg = "Please wait {$wait} seconds before requesting a new SMS code.";
+        if (($wait = $this->cooldownRemaining($pending->last_sms_sent_at)) > 0) {
+            $unit = $wait === 1 ? 'second' : 'seconds';
+            $msg = "Please wait {$wait} {$unit} before requesting a new SMS code.";
 
             return $request->expectsJson()
-                ? response()->json(['message' => $msg], 429)
-                : back()->with('warning', $msg);
+                ? response()->json(['message' => $msg, 'retry_after' => $wait], 429)
+                : back()->with('warning', $msg)->with('cooldown_type', 'sms');
         }
 
         $otp = (string) random_int(100000, 999999);
@@ -374,13 +390,13 @@ class AuthController extends Controller
                 : back()->with('success', $msg);
         }
 
-        if ($pending->last_email_sent_at && $pending->last_email_sent_at->gt(now()->subSeconds(60))) {
-            $wait = (int) now()->diffInSeconds($pending->last_email_sent_at->copy()->addSeconds(60));
-            $msg = "Please wait {$wait} seconds before requesting a new verification email.";
+        if (($wait = $this->cooldownRemaining($pending->last_email_sent_at)) > 0) {
+            $unit = $wait === 1 ? 'second' : 'seconds';
+            $msg = "Please wait {$wait} {$unit} before requesting a new verification email.";
 
             return $request->expectsJson()
-                ? response()->json(['message' => $msg], 429)
-                : back()->with('warning', $msg);
+                ? response()->json(['message' => $msg, 'retry_after' => $wait], 429)
+                : back()->with('warning', $msg)->with('cooldown_type', 'email');
         }
 
         $plainEmailToken = Str::random(40);
@@ -601,6 +617,20 @@ class AuthController extends Controller
         }
     }
 
+    private function cooldownRemaining(?\Carbon\CarbonInterface $lastSentAt, int $cooldownSeconds = 60): int
+    {
+        if (! $lastSentAt) {
+            return 0;
+        }
+
+        $expiresAt = $lastSentAt->copy()->addSeconds($cooldownSeconds);
+        if ($expiresAt->lte(now())) {
+            return 0;
+        }
+
+        return max(1, (int) ceil(now()->diffInSeconds($expiresAt)));
+    }
+
     private function attemptSms(callable $send, string $errorMessage, array $context = []): bool
     {
         try {
@@ -667,7 +697,9 @@ class AuthController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
 
-        $message = 'Email and mobile number verified! Please complete your profile.';
+        $message = config('services.sms.otp_enabled', false)
+            ? 'Email and mobile number verified! Please complete your profile.'
+            : 'Email verified! Please complete your profile.';
 
         return $request->expectsJson()
             ? response()->json([

@@ -29,6 +29,7 @@ return [
     ],
 
     'sms' => [
+        'otp_enabled' => filter_var(env('SMS_OTP_ENABLED', false), FILTER_VALIDATE_BOOL),
         'driver' => env('SMS_DRIVER', 'auto'),
     ],
 

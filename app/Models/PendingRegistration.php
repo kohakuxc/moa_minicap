@@ -61,7 +61,15 @@ class PendingRegistration extends Model
 
     public function isFullyVerified(): bool
     {
-        return $this->hasVerifiedEmail() && $this->hasVerifiedPhone();
+        if (! $this->hasVerifiedEmail()) {
+            return false;
+        }
+
+        if (config('services.sms.otp_enabled', false)) {
+            return $this->hasVerifiedPhone();
+        }
+
+        return true;
     }
 
     public function isPhoneOtpExpired(): bool

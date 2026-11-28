@@ -28,12 +28,16 @@ class PendingRegistrationVerifyEmail extends Notification
     {
         $appName = config('app.name', 'MOA');
 
+        $closingLine = config('services.sms.otp_enabled', false)
+            ? 'Your account will not be created until both your email and mobile number are verified.'
+            : 'Your account will not be created until you verify your email address.';
+
         return (new MailMessage)
             ->subject("Verify your {$appName} registration email")
             ->greeting("Hello {$this->name},")
             ->line("Please verify your email address to continue setting up your {$appName} patient account.")
             ->action('Verify Email Address', $this->verificationUrl)
             ->line("This link will expire in {$this->expiresInMinutes} minutes.")
-            ->line('Your account will not be created until both your email and mobile number are verified.');
+            ->line($closingLine);
     }
 }
