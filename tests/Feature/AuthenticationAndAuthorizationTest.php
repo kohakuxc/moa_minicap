@@ -34,6 +34,105 @@ class AuthenticationAndAuthorizationTest extends TestCase
         Notification::assertSentTo($user, \Illuminate\Auth\Notifications\VerifyEmail::class);
     }
 
+    public function test_registration_succeeds_gracefully_when_verification_email_fails(): void
+    {
+        Notification::shouldReceive('send')
+            ->once()
+            ->andThrow(new \RuntimeException('SMTP connection timed out'));
+
+        $response = $this->post('/auth/register', [
+            'name' => 'Grace Patient',
+            'email' => 'grace@example.com',
+            'phone' => '555-0199',
+            'password' => 'Password123!',
+            'password_confirmation' => 'Password123!',
+            'terms' => '1',
+        ]);
+
+        $response->assertRedirect('/email/verify');
+        $response->assertSessionHas('warning');
+        $this->assertAuthenticated();
+        $this->assertDatabaseHas('users', ['email' => 'grace@example.com']);
+    }
+
+    public function test_resend_verification_returns_503_when_mailer_fails(): void
+    {
+        $user = User::factory()->unverified()->create();
+
+        Notification::shouldReceive('send')
+            ->once()
+            ->andThrow(new \RuntimeException('Mailer unavailable'));
+
+        $this->actingAs($user)
+            ->postJson('/email/verification-notification')
+            ->assertStatus(503)
+            ->assertJsonStructure(['message']);
+    }
+
+    public function test_resend_mailer_transport_can_be_resolved(): void
+    {
+        config([
+            'mail.default' => 'resend',
+            'services.resend.key' => 're_test_1234567890',
+        ]);
+
+        $transport = app('mail.manager')->mailer('resend')->getSymfonyTransport();
+
+        $this->assertInstanceOf(\Illuminate\Mail\Transport\ResendTransport::class, $transport);
+    }
+
+    public function test_brevo_mailer_sends_email_via_http_api(): void
+    {
+        \Illuminate\Support\Facades\Http::fake([
+            'https://api.brevo.com/v3/smtp/email' => \Illuminate\Support\Facades\Http::response([
+                'messageId' => '<brevo-test-123>',
+            ], 201),
+        ]);
+
+        config([
+            'mail.default' => 'brevo',
+            'services.brevo.key' => 'xkeysib-test-key',
+            'mail.from.address' => 'clinic@example.com',
+            'mail.from.name' => 'MOA Optical Clinic',
+        ]);
+
+        $transport = app('mail.manager')->mailer('brevo')->getSymfonyTransport();
+        $this->assertInstanceOf(\App\Mail\Transport\BrevoTransport::class, $transport);
+
+        \Illuminate\Support\Facades\Mail::mailer('brevo')->raw('Verify your account', function ($message): void {
+            $message->to('patient@example.com', 'Patient Name')->subject('Verify Email');
+        });
+
+        \Illuminate\Support\Facades\Http::assertSent(function ($request): bool {
+            return $request->url() === 'https://api.brevo.com/v3/smtp/email'
+                && $request->header('api-key')[0] === 'xkeysib-test-key'
+                && $request['sender']['email'] === 'clinic@example.com'
+                && $request['to'][0]['email'] === 'patient@example.com'
+                && $request['subject'] === 'Verify Email';
+        });
+    }
+
+    public function test_brevo_mailer_throws_transport_exception_on_api_error(): void
+    {
+        \Illuminate\Support\Facades\Http::fake([
+            'https://api.brevo.com/v3/smtp/email' => \Illuminate\Support\Facades\Http::response([
+                'message' => 'Key not found',
+            ], 401),
+        ]);
+
+        config([
+            'mail.default' => 'brevo',
+            'services.brevo.key' => 'invalid-key',
+            'mail.from.address' => 'clinic@example.com',
+        ]);
+
+        $this->expectException(\Symfony\Component\Mailer\Exception\TransportException::class);
+
+        \Illuminate\Support\Facades\Mail::mailer('brevo')->raw('Hello', function ($message): void {
+            $message->to('patient@example.com')->subject('Test');
+        });
+    }
+
     public function test_registration_requires_terms_and_a_strong_password(): void
     {
         Notification::fake();

@@ -282,6 +282,10 @@ Set these production environment values on the hosting provider, not in Git:
 APP_ENV=production
 APP_DEBUG=false
 APP_URL=https://your-real-domain.example
+MAIL_MAILER=brevo
+BREVO_API_KEY=your-brevo-api-key
+MAIL_FROM_ADDRESS=your-verified-sender@gmail.com
+MAIL_FROM_NAME="MOA Optical Clinic"
 DB_CONNECTION=pgsql
 DB_HOST=your-supabase-pooler-host
 DB_PORT=5432

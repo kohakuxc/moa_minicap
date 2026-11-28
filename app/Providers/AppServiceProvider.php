@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Mail\Transport\BrevoTransport;
 use App\Models\Appointment;
 use App\Models\ClinicalExamination;
 use App\Models\Invoice;
@@ -18,6 +19,7 @@ use App\Policies\PrescriptionPolicy;
 use App\Policies\QueuePolicy;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -36,6 +38,13 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Paginator::useBootstrapFour();
+
+        Mail::extend('brevo', function (array $config = []): BrevoTransport {
+            return new BrevoTransport(
+                (string) ($config['key'] ?? config('services.brevo.key', '')),
+                (int) ($config['timeout'] ?? config('mail.mailers.brevo.timeout', 10)),
+            );
+        });
 
         // Role Gates
         Gate::define('admin', fn (User $user): bool => $user->isAdmin());
