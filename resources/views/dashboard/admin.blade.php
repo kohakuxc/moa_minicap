@@ -39,7 +39,7 @@
     <!-- 1. Daily Appointments -->
     <div class="kpi-card-custom kpi-appointments">
         <div class="kpi-header">
-            <span>Daily Appointments</span>
+            <span>Upcoming Appointments</span>
             <span style="color: var(--moa-teal); font-size: 16px;"><i class="bx bx-calendar"></i></span>
         </div>
         <div class="kpi-value">{{ $kpis['today_appointments'] }}</div>
@@ -48,34 +48,9 @@
         </div>
     </div>
 
-    <!-- 2. No-Show & Cancellation Rate -->
-    <div class="kpi-card-custom kpi-noshow">
-        <div class="kpi-header">
-            <span>No-Show / Cancel Rate</span>
-            <span style="color: var(--moa-slate); font-size: 16px;"><i class="bx bx-x-circle"></i></span>
-        </div>
-        <div class="kpi-value">{{ $kpis['no_show_rate'] }}%</div>
-        <div class="kpi-sub">
-            Calculated across {{ $kpis['total_past'] }} recorded past visits
-        </div>
-    </div>
-
-    <!-- 3. Revenue Split -->
-    <div class="kpi-card-custom kpi-revenue">
-        <div class="kpi-header">
-            <span>Revenue Split</span>
-            <span style="color: var(--moa-bronze); font-size: 16px;"><i class="bx bx-dollar-circle"></i></span>
-        </div>
-        <div class="kpi-value">₱{{ number_format($kpis['total_revenue'], 2) }}</div>
-        <div class="kpi-sub">
-            Clinical: <strong>₱{{ number_format($kpis['consultation_revenue'], 0) }}</strong> · Retail: <strong>₱{{ number_format($kpis['retail_revenue'], 0) }}</strong>
-        </div>
-    </div>
-
-    <!-- 4. Pending Lab Orders -->
     <div class="kpi-card-custom kpi-lab">
         <div class="kpi-header">
-            <span>Pending Optical Lab</span>
+            <span>Lens Status</span>
             <span style="color: var(--moa-gold); font-size: 16px;"><i class="bx bx-cog"></i></span>
         </div>
         <div class="kpi-value">{{ $kpis['pending_lab_orders'] }}</div>
@@ -84,10 +59,13 @@
         </div>
     </div>
 
+    <!-- 2. No-Show & Cancellation Rate --> 
+    
+
     <!-- 5. Low-Stock Inventory Alerts -->
     <div class="kpi-card-custom kpi-inventory">
         <div class="kpi-header">
-            <span>Low-Stock Alerts</span>
+            <span>Dispensing</span>
             <span style="color: #E0564C; font-size: 16px;"><i class="bx bx-error-alt"></i></span>
         </div>
         <div class="kpi-value" style="color: {{ $kpis['low_stock_count'] > 0 ? '#E0564C' : 'inherit' }};">
@@ -95,6 +73,17 @@
         </div>
         <div class="kpi-sub">
             Frames at or below reorder threshold
+        </div>
+    </div>
+
+    <div class="kpi-card-custom kpi-noshow">
+        <div class="kpi-header">
+            <span>Cancelled Appointments</span>
+            <span style="color: #cf1d11; font-size: 16px;"><i class="bx bx-x-circle"></i></span>
+        </div>
+        <div class="kpi-value">{{ $kpis['no_show_rate'] }}%</div>
+        <div class="kpi-sub">
+            Calculated across {{ $kpis['total_past'] }} recorded past visits
         </div>
     </div>
 </div>
